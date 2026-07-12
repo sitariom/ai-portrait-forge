@@ -6,6 +6,7 @@
         <li>1.6</li>
     </supportedVersions>
     <packageId>sitariom.aiPortraitForge</packageId>
+    <previewImage>Preview.jpg</previewImage>
     <modDependencies>
     <li>
         <packageId>brrainz.harmony</packageId>
