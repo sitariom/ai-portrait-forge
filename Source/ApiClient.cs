@@ -130,7 +130,7 @@ namespace Avatar
                 LongEventHandler.ExecuteWhenFinished(() =>
                     onComplete(false, provider == ApiProvider.GoogleGemini
                         ? "API key not configured for " + providerName + ". Get one at https://aistudio.google.com/apikey"
-                        : "API key not configured for " + providerName + ". Open Mod Options → Avatar - Personas to set it."));
+                        : "API key not configured for " + providerName + ". Open Mod Options → AI Portrait Forge to set it."));
                 return;
             }
 
@@ -757,8 +757,8 @@ namespace Avatar
             req.Method = "POST";
             req.ContentType = "application/json";
             req.Headers["Authorization"] = "Bearer " + apiKey;
-            req.Headers["HTTP-Referer"] = "https://steamcommunity.com/sharedfiles/filedetails/?id=3111373293";
-            req.Headers["X-Title"] = "Avatar - Personas (RimWorld Mod)";
+            req.Headers["HTTP-Referer"] = "https://github.com/sitariom/ai-portrait-forge";
+            req.Headers["X-Title"] = "AI Portrait Forge (RimWorld Mod)";
             req.Timeout = 180000;
             req.ContentLength = bodyBytes.Length;
 

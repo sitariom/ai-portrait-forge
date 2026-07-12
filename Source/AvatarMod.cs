@@ -218,7 +218,7 @@ namespace Avatar
             settings = GetSettings<AvatarSettings>();
         }
 
-        public override string SettingsCategory() => "Avatar - Personas";
+        public override string SettingsCategory() => "AI Portrait Forge";
 
         public override void DoSettingsWindowContents(Rect inRect)
         {
@@ -751,7 +751,7 @@ namespace Avatar
     public static class AvatarJobDriverPatch
     {
         private static MethodInfo oldMethod = AccessTools.Method(typeof(PortraitsCache), "SetDirty");
-        private static MethodInfo newMethod = AccessTools.Method("AvatarJobDriverPatch:SetDirty");
+        private static MethodInfo newMethod = AccessTools.Method("Avatar.AvatarJobDriverPatch:SetDirty");
         public static void SetDirty(Pawn _)
         {
             // DO NOTHING!

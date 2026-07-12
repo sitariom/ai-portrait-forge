@@ -82,12 +82,17 @@ namespace Avatar
                             switch (opt.recolor)
                             {
                                 case RecolorOption.Yes:
+                                    if (grayPalette != null)
+                                    {
                                     if (gray > 0.9)
                                         result.SetPixel(x,y,grayPalette.GetPixel(0,0));
                                     else if (gray > 0.3)
                                         result.SetPixel(x,y,grayPalette.GetPixel(1,0));
                                     else
                                         result.SetPixel(x,y,grayPalette.GetPixel(2,0));
+                                    }
+                                    else
+                                        result.SetPixel(x,y,new Color(gray, gray, gray, 1f));
                                     break;
                                 case RecolorOption.Gray:
                                     gray = ((float)Math.Round(gray*5f)+2f)/7f;

@@ -216,6 +216,8 @@ namespace Avatar
             if (canvas == null)
                 canvas = new (width, height);
             TextureUtil.ClearTexture(canvas, bgColor);
+            // Guard: pawns without story (e.g. some modded races) can't render
+            if (pawn.story == null) return canvas;
             string gender = (pawn.gender == Gender.Female) ? "Female" : "Male";
             string lifeStage = "";
             int yOffset = 0;
