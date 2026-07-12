@@ -23,6 +23,11 @@ Assets/Setup/RimWorld_1.1-000001.safetensors
 Assets/Setup/7zr.exe
 *.rar
 
+# Marketing / promotional (not needed for mod to function)
+Marketing/
+UninstallDeps.ps1
+Assets/gray.png
+
 # IDE
 .vs/
 .vscode/
