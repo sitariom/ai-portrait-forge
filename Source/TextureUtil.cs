@@ -119,10 +119,9 @@ namespace Avatar
         }
 
         /// <summary>
-        /// Remove fundo verde chroma-key (#00FF00) da imagem.
-        /// Estratégia: o prompt instrui a IA a usar fundo verde brilhante.
-        /// Qualquer pixel onde verde >> vermelho e verde >> azul é fundo.
-        /// Muito mais confiável que detecção de borda.
+        /// Remove fundo branco da imagem. Flood-fill a partir das bordas,
+        /// removendo apenas pixels muito claros (brilho > 210).
+        /// O personagem nunca é afetado porque pele/roupa não chega a 210.
         /// </summary>
         public static void RemoveBackground(string path)
         {
@@ -132,59 +131,80 @@ namespace Avatar
                 int w, h;
                 if (!DecodePngToRGBA(path, out rgba, out w, out h))
                     return;
-                
                 if (w < 20 || h < 20) return;
                 
-                int totalPixels = w * h;
-                int removedCount = 0;
-                
-                for (int i = 0; i < totalPixels; i++)
+                int total = w * h;
+                byte[] brightness = new byte[total];
+                for (int i = 0; i < total; i++)
                 {
                     int p = i * 4;
-                    int r = rgba[p];
-                    int g = rgba[p + 1];
-                    int b = rgba[p + 2];
-                    
-                    // Chroma key green detection:
-                    // Green must be significantly higher than both red and blue
-                    // AND green must be reasonably bright (not dark green from clothes/hair)
-                    bool isGreenBg = (g > r + 40) && (g > b + 40) && (g > 100);
-                    
-                    if (isGreenBg)
+                    int max = rgba[p];
+                    if (rgba[p+1] > max) max = rgba[p+1];
+                    if (rgba[p+2] > max) max = rgba[p+2];
+                    brightness[i] = (byte)max;
+                }
+                
+                // Flood-fill from edges, only including bright pixels (>= 210)
+                bool[] visited = new bool[total];
+                bool[] isBg = new bool[total];
+                var queue = new System.Collections.Generic.Queue<int>();
+                
+                // Seed all edge pixels that are bright enough
+                for (int x = 0; x < w; x++)
+                {
+                    if (brightness[x] >= 210) { isBg[x] = true; visited[x] = true; queue.Enqueue(x); }
+                    int b = (h - 1) * w + x;
+                    if (brightness[b] >= 210) { isBg[b] = true; visited[b] = true; queue.Enqueue(b); }
+                }
+                for (int y = 1; y < h - 1; y++)
+                {
+                    int l = y * w;
+                    if (brightness[l] >= 210) { isBg[l] = true; visited[l] = true; queue.Enqueue(l); }
+                    int r = y * w + w - 1;
+                    if (brightness[r] >= 210) { isBg[r] = true; visited[r] = true; queue.Enqueue(r); }
+                }
+                
+                // Flood fill
+                while (queue.Count > 0)
+                {
+                    int idx = queue.Dequeue();
+                    int x = idx % w, y = idx / w;
+                    int[] nx = { x-1, x+1, x, x };
+                    int[] ny = { y, y, y-1, y+1 };
+                    for (int d = 0; d < 4; d++)
                     {
-                        rgba[p + 3] = 0; // alpha = 0 (transparent)
-                        removedCount++;
+                        int nx2 = nx[d], ny2 = ny[d];
+                        if (nx2 < 0 || nx2 >= w || ny2 < 0 || ny2 >= h) continue;
+                        int nidx = ny2 * w + nx2;
+                        if (!visited[nidx] && brightness[nidx] >= 210)
+                        {
+                            visited[nidx] = true;
+                            isBg[nidx] = true;
+                            queue.Enqueue(nidx);
+                        }
                     }
                 }
                 
-                // Safety: if <2% or >40% removed, skip (probably no green bg or eating subject)
-                float removedPct = (float)removedCount / totalPixels;
-                if (removedPct < 0.02f || removedPct > 0.40f)
-                    return;
+                // Count and safety check
+                int bgCount = 0;
+                for (int i = 0; i < total; i++) if (isBg[i]) bgCount++;
+                float pct = (float)bgCount / total;
+                if (pct < 0.03f || pct > 0.45f) return;
                 
-                // Anti-aliasing edge cleanup: for pixels at the boundary,
-                // reduce alpha proportionally to how "green" they are
-                for (int i = 0; i < totalPixels; i++)
+                // Apply transparency + anti-alias edge
+                for (int i = 0; i < total; i++)
                 {
                     int p = i * 4;
-                    if (rgba[p + 3] == 0) continue; // already transparent
-                    
-                    int r = rgba[p];
-                    int g = rgba[p + 1];
-                    int b = rgba[p + 2];
-                    
-                    // Partial green: anti-aliased edge pixel
-                    if (g > r + 20 && g > b + 20 && g > 80)
+                    if (isBg[i])
                     {
-                        // Calculate how "green" this pixel is (0-255)
-                        int greenness = g - (r + b) / 2;
-                        if (greenness < 0) greenness = 0;
-                        if (greenness > 255) greenness = 255;
-                        
-                        // Reduce alpha based on greenness
-                        int newAlpha = 255 - greenness;
-                        if (newAlpha < 0) newAlpha = 0;
-                        rgba[p + 3] = (byte)newAlpha;
+                        rgba[p+3] = 0;
+                    }
+                    else if (brightness[i] >= 200)
+                    {
+                        // Edge pixel: partially transparent based on brightness
+                        int alpha = 255 - (brightness[i] - 190) * 4;
+                        if (alpha < 0) alpha = 0;
+                        if (alpha < rgba[p+3]) rgba[p+3] = (byte)alpha;
                     }
                 }
                 
