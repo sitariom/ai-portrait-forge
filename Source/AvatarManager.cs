@@ -1430,10 +1430,10 @@ namespace Avatar
                 .Replace("{implants}", GetImplantsLabel())
                 .Replace("{prosthetics}", GetProstheticsLabel());
             
-            // Append art style as a clear directive
+            // Prepend art style at the START (AI weights first tokens more heavily)
             string artSuffix = AvatarMod.GetArtStylePrompt(mod.settings.artStyle, mod.settings.customStylePrompt);
             if (!string.IsNullOrEmpty(artSuffix))
-                result += ". Art style: " + artSuffix + ".";
+                result = "Art style: " + artSuffix + ". " + result;
             result += " Portrait orientation, vertical composition. Plain white background, studio lighting.";
             
             // Clean up double commas/spaces/dots
@@ -1991,10 +1991,10 @@ namespace Avatar
                 .Replace("{description}", description)
                 .Replace("{health}", GetHealthLabel());
             
-            // Append art style as a clear directive
+            // Prepend art style at the START (AI weights first tokens more heavily)
             string artSuffix = AvatarMod.GetArtStylePrompt(mod.settings.artStyle, mod.settings.customStylePrompt);
             if (!string.IsNullOrEmpty(artSuffix))
-                result += ". Art style: " + artSuffix + ".";
+                result = "Art style: " + artSuffix + ". " + result;
             result += " Portrait orientation, vertical composition. Plain white background, studio lighting.";
             
             // Clean up
