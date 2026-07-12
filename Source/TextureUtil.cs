@@ -119,9 +119,10 @@ namespace Avatar
         }
 
         /// <summary>
-        /// Remove o fundo de uma imagem PNG já salva em disco.
-        /// Opera diretamente nos bytes do arquivo — NÃO usa Unity APIs
-        /// e pode ser chamado de qualquer thread.
+        /// Remove fundo verde chroma-key (#00FF00) da imagem.
+        /// Estratégia: o prompt instrui a IA a usar fundo verde brilhante.
+        /// Qualquer pixel onde verde >> vermelho e verde >> azul é fundo.
+        /// Muito mais confiável que detecção de borda.
         /// </summary>
         public static void RemoveBackground(string path)
         {
@@ -132,125 +133,67 @@ namespace Avatar
                 if (!DecodePngToRGBA(path, out rgba, out w, out h))
                     return;
                 
-                if (w < 20 || h < 20) return; // Too small
+                if (w < 20 || h < 20) return;
                 
                 int totalPixels = w * h;
+                int removedCount = 0;
                 
-                // Sample ONLY the 4 extreme corners (5x5 pixel area each, inset 2px from edge)
-                int sampleSize = 5;
-                float[] corners = new float[12]; // R,G,B for 4 corners
-                SampleCorner(rgba, w, h, 2, 2, sampleSize, out corners[0], out corners[1], out corners[2]);
-                SampleCorner(rgba, w, h, w - 2 - sampleSize, 2, sampleSize, out corners[3], out corners[4], out corners[5]);
-                SampleCorner(rgba, w, h, 2, h - 2 - sampleSize, sampleSize, out corners[6], out corners[7], out corners[8]);
-                SampleCorner(rgba, w, h, w - 2 - sampleSize, h - 2 - sampleSize, sampleSize, out corners[9], out corners[10], out corners[11]);
-                
-                // Check if all 4 corners are similar (uniform background)
-                float avgR = (corners[0]+corners[3]+corners[6]+corners[9]) / 4f;
-                float avgG = (corners[1]+corners[4]+corners[7]+corners[10]) / 4f;
-                float avgB = (corners[2]+corners[5]+corners[8]+corners[11]) / 4f;
-                
-                float maxDevR = MaxDev(corners[0], corners[3], corners[6], corners[9], avgR);
-                float maxDevG = MaxDev(corners[1], corners[4], corners[7], corners[10], avgG);
-                float maxDevB = MaxDev(corners[2], corners[5], corners[8], corners[11], avgB);
-                
-                // If corners are too different, background is not uniform — skip
-                if (maxDevR > 40f || maxDevG > 40f || maxDevB > 40f)
-                    return;
-                
-                // Fixed conservative tolerance
-                float tolerance = 20f;
-                
-                bool[] visited = new bool[totalPixels];
-                bool[] isBg = new bool[totalPixels];
-                var queue = new System.Collections.Generic.Queue<int>();
-                
-                // Seed ONLY from the 4 corners (not all edges)
-                TrySeed(rgba, visited, isBg, queue, 2, 2, w, avgR, avgG, avgB, tolerance);
-                TrySeed(rgba, visited, isBg, queue, w - 3, 2, w, avgR, avgG, avgB, tolerance);
-                TrySeed(rgba, visited, isBg, queue, 2, h - 3, w, avgR, avgG, avgB, tolerance);
-                TrySeed(rgba, visited, isBg, queue, w - 3, h - 3, w, avgR, avgG, avgB, tolerance);
-                
-                // Flood fill (4-directional only — no diagonals)
-                while (queue.Count > 0)
-                {
-                    int idx = queue.Dequeue();
-                    int x = idx % w;
-                    int y = idx / w;
-                    if (x > 0) TrySeed(rgba, visited, isBg, queue, x - 1, y, w, avgR, avgG, avgB, tolerance);
-                    if (x < w - 1) TrySeed(rgba, visited, isBg, queue, x + 1, y, w, avgR, avgG, avgB, tolerance);
-                    if (y > 0) TrySeed(rgba, visited, isBg, queue, x, y - 1, w, avgR, avgG, avgB, tolerance);
-                    if (y < h - 1) TrySeed(rgba, visited, isBg, queue, x, y + 1, w, avgR, avgG, avgB, tolerance);
-                }
-                
-                // Safety: if >30% would become transparent, skip
-                int bgCount = 0;
-                for (int i = 0; i < totalPixels; i++)
-                    if (isBg[i]) bgCount++;
-                
-                if (bgCount > totalPixels * 0.30f || bgCount < totalPixels * 0.02f)
-                    return;
-                
-                // Apply transparency
                 for (int i = 0; i < totalPixels; i++)
                 {
-                    if (isBg[i])
-                        rgba[i * 4 + 3] = 0;
+                    int p = i * 4;
+                    int r = rgba[p];
+                    int g = rgba[p + 1];
+                    int b = rgba[p + 2];
+                    
+                    // Chroma key green detection:
+                    // Green must be significantly higher than both red and blue
+                    // AND green must be reasonably bright (not dark green from clothes/hair)
+                    bool isGreenBg = (g > r + 40) && (g > b + 40) && (g > 100);
+                    
+                    if (isGreenBg)
+                    {
+                        rgba[p + 3] = 0; // alpha = 0 (transparent)
+                        removedCount++;
+                    }
                 }
                 
-                // Re-encode
+                // Safety: if <2% or >40% removed, skip (probably no green bg or eating subject)
+                float removedPct = (float)removedCount / totalPixels;
+                if (removedPct < 0.02f || removedPct > 0.40f)
+                    return;
+                
+                // Anti-aliasing edge cleanup: for pixels at the boundary,
+                // reduce alpha proportionally to how "green" they are
+                for (int i = 0; i < totalPixels; i++)
+                {
+                    int p = i * 4;
+                    if (rgba[p + 3] == 0) continue; // already transparent
+                    
+                    int r = rgba[p];
+                    int g = rgba[p + 1];
+                    int b = rgba[p + 2];
+                    
+                    // Partial green: anti-aliased edge pixel
+                    if (g > r + 20 && g > b + 20 && g > 80)
+                    {
+                        // Calculate how "green" this pixel is (0-255)
+                        int greenness = g - (r + b) / 2;
+                        if (greenness < 0) greenness = 0;
+                        if (greenness > 255) greenness = 255;
+                        
+                        // Reduce alpha based on greenness
+                        int newAlpha = 255 - greenness;
+                        if (newAlpha < 0) newAlpha = 0;
+                        rgba[p + 3] = (byte)newAlpha;
+                    }
+                }
+                
                 byte[] pngOut = EncodeRGBAtoPNG(rgba, w, h);
                 System.IO.File.WriteAllBytes(path, pngOut);
             }
             catch (System.Exception e)
             {
                 Verse.Log.Warning("Avatar: Background removal failed: " + e.Message);
-            }
-        }
-        
-        private static void SampleCorner(byte[] rgba, int w, int h, int startX, int startY, int size,
-            out float avgR, out float avgG, out float avgB)
-        {
-            float r = 0, g = 0, b = 0;
-            int count = 0;
-            int endX = startX + size < w ? startX + size : w;
-            int endY = startY + size < h ? startY + size : h;
-            for (int y = startY; y < endY; y++)
-                for (int x = startX; x < endX; x++)
-                {
-                    int i = (y * w + x) * 4;
-                    r += rgba[i]; g += rgba[i+1]; b += rgba[i+2];
-                    count++;
-                }
-            avgR = r / count;
-            avgG = g / count;
-            avgB = b / count;
-        }
-        
-        private static float MaxDev(float a, float b, float c, float d, float avg)
-        {
-            float da = a - avg; if (da < 0) da = -da;
-            float db = b - avg; if (db < 0) db = -db;
-            float dc = c - avg; if (dc < 0) dc = -dc;
-            float dd = d - avg; if (dd < 0) dd = -dd;
-            return da > db ? (da > dc ? (da > dd ? da : dd) : (dc > dd ? dc : dd))
-                 : db > dc ? (db > dd ? db : dd) : (dc > dd ? dc : dd);
-        }
-        
-        private static void TrySeed(byte[] rgba, bool[] visited, bool[] isBg,
-            System.Collections.Generic.Queue<int> queue, int x, int y, int w,
-            float bgR, float bgG, float bgB, float tol)
-        {
-            int idx = y * w + x;
-            if (visited[idx]) return;
-            visited[idx] = true;
-            int i = idx * 4;
-            float dr = rgba[i] - bgR; if (dr < 0) dr = -dr;
-            float dg = rgba[i+1] - bgG; if (dg < 0) dg = -dg;
-            float db = rgba[i+2] - bgB; if (db < 0) db = -db;
-            if ((dr + dg + db) / 3f <= tol)
-            {
-                isBg[idx] = true;
-                queue.Enqueue(idx);
             }
         }
         
