@@ -1434,6 +1434,7 @@ namespace Avatar
             string artSuffix = AvatarMod.GetArtStylePrompt(mod.settings.artStyle, mod.settings.customStylePrompt);
             if (!string.IsNullOrEmpty(artSuffix))
                 result += ". Art style: " + artSuffix + ".";
+            result += " Portrait orientation, vertical composition.";
             
             // Clean up double commas/spaces/dots
             result = System.Text.RegularExpressions.Regex.Replace(result, @"\s*,\s*,+\s*", ", ");
@@ -1994,6 +1995,7 @@ namespace Avatar
             string artSuffix = AvatarMod.GetArtStylePrompt(mod.settings.artStyle, mod.settings.customStylePrompt);
             if (!string.IsNullOrEmpty(artSuffix))
                 result += ". Art style: " + artSuffix + ".";
+            result += " Portrait orientation, vertical composition.";
             
             // Clean up
             result = System.Text.RegularExpressions.Regex.Replace(result, @"\s*,\s*,+\s*", ", ");

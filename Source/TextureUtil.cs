@@ -157,9 +157,9 @@ namespace Avatar
                 
                 // Dynamic tolerance: larger of: (range * 1.5) or 40
                 float range = (maxR - minR + maxG - minG + maxB - minB) / 3f;
-                float tolerance = range * 1.5f;
-                if (tolerance < 40f) tolerance = 40f;
-                if (tolerance > 100f) tolerance = 100f;
+                float tolerance = range * 1.2f;
+                if (tolerance < 25f) tolerance = 25f;
+                if (tolerance > 70f) tolerance = 70f;
                 
                 // Edge-flood: mark edge-connected background pixels
                 bool[] visited = new bool[totalPixels];
@@ -187,6 +187,14 @@ namespace Avatar
                     TryNeighbor(rgba, visited, isBg, queue, x, y - 1, w, h, bgR, bgG, bgB, tolerance);
                     TryNeighbor(rgba, visited, isBg, queue, x, y + 1, w, h, bgR, bgG, bgB, tolerance);
                 }
+                
+                // Safety: if >50% of image would become transparent, skip (subject being eaten)
+                int bgCount = 0;
+                for (int i = 0; i < totalPixels; i++)
+                    if (isBg[i]) bgCount++;
+                
+                if (bgCount > totalPixels * 0.55f)
+                    return; // Too much removed — likely eating the subject
                 
                 // Apply transparency to background pixels
                 for (int i = 0; i < totalPixels; i++)

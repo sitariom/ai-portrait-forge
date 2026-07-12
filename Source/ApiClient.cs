@@ -560,8 +560,8 @@ namespace Avatar
         {
             error = null;
 
-            // Build the full positive prompt
-            string positive = (prompts + " " + suffix).Trim();
+            // Force image-only output for Gemini
+            string positive = ("Generate ONLY an image, no text: " + prompts + " " + suffix).Trim();
             if (!string.IsNullOrEmpty(prefix))
                 positive = prefix + " " + positive;
             while (positive.Contains("  ")) positive = positive.Replace("  ", " ");

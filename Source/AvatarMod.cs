@@ -504,7 +504,7 @@ namespace Avatar
             if (!string.IsNullOrEmpty(s.apiNegativePrompt))
                 return s.apiNegativePrompt;
             
-            string baseNeg = "background, scenery, landscape, nature, outdoor, indoor, room, wall, multiple people, group, crowd, extra characters, extra person, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, missing face, cropped face, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, doll, wax figure, mannequin, duplicate, cloned, mirrored, extra limbs, extra fingers, mutated, fused";
+            string baseNeg = "background, scenery, landscape orientation, horizontal composition, panoramic, wide aspect ratio, nature, outdoor, indoor, room, wall, multiple people, group, crowd, extra characters, extra person, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, missing face, cropped face, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, doll, wax figure, mannequin, duplicate, cloned, mirrored, extra limbs, extra fingers, mutated, fused";
             
             string artNeg = ArtStylePrompts.GetNegativePrompt(s.artStyle);
             if (string.IsNullOrEmpty(artNeg)) return baseNeg;
@@ -515,7 +515,7 @@ namespace Avatar
         {
             // Use the generic creature default (no category-specific override here — 
             // the per-category overrides are used by Prompts_Window at generation time)
-            string baseNeg = "background, scenery, landscape, nature, outdoor, indoor, room, wall, multiple creatures, group, herd, flock, extra animals, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, toy, duplicate, cloned, mirrored, extra legs, extra tails, mutated, fused, human, human face, human hands, anthropomorphic, wrong species, hybrid, chimeric";
+            string baseNeg = "background, scenery, landscape orientation, horizontal composition, panoramic, nature, outdoor, indoor, room, wall, multiple creatures, group, herd, flock, extra animals, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, toy, duplicate, cloned, mirrored, extra legs, extra tails, mutated, fused, human, human face, human hands, anthropomorphic, wrong species, hybrid, chimeric";
             
             string artNeg = ArtStylePrompts.GetNegativePrompt(s.artStyle);
             if (string.IsNullOrEmpty(artNeg)) return baseNeg;
