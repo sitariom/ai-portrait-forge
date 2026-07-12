@@ -360,63 +360,68 @@ namespace Avatar
             listingStandard.Label((TaggedString)"Humanoid prompt template", -1, "Placeholders: {age}, {gender}, {race}, {lifestage}, {bodytype}, {skincolor}, {haircolor}, {hair}, {beard}, {apparel}, {items}, {mood}, {personality}, {traits}, {health}, {implants}, {prosthetics}.");
             settings.aiGenPreamble = listingStandard.TextEntry(settings.aiGenPreamble);
             if (listingStandard.ButtonText("Reset humanoid template")) settings.aiGenPreamble = settings.aiGenPreambleDefault;
-            listingStandard.Label((TaggedString)"Humanoid negative prompt:", -1);
+            listingStandard.Label((TaggedString)"Humanoid negative prompt (leave empty for default):", -1);
             settings.apiNegativePrompt = listingStandard.TextEntry(settings.apiNegativePrompt);
+            if (string.IsNullOrEmpty(settings.apiNegativePrompt)) {
+                Text.Font = GameFont.Tiny;
+                listingStandard.Label((TaggedString)("  Default: background, scenery, landscape orientation, ... (73 terms)"), -1);
+                Text.Font = GameFont.Small;
+            }
             listingStandard.GapLine();
             
             listingStandard.Label((TaggedString)"Animal template (mammals, birds)", -1, "Placeholders: {size}, {age}, {gender}, {race}, {lifestage}, {description}, {health}.");
             settings.aiGenAnimalPreamble = listingStandard.TextEntry(settings.aiGenAnimalPreamble);
             if (listingStandard.ButtonText("Reset animal template")) settings.aiGenAnimalPreamble = settings.aiGenAnimalPreambleDefault;
-            listingStandard.Label((TaggedString)"Animal negative prompt:", -1);
+            listingStandard.Label((TaggedString)"Animal negative prompt (empty = default):", -1);
             settings.animalNegativePrompt = listingStandard.TextEntry(settings.animalNegativePrompt);
             listingStandard.GapLine();
             
             listingStandard.Label((TaggedString)"Insect / Reptile template", -1, "Placeholders: {race}, {size}, {lifestage}, {description}, {health}.");
             settings.aiGenInsectPreamble = listingStandard.TextEntry(settings.aiGenInsectPreamble);
             if (listingStandard.ButtonText("Reset insect template")) settings.aiGenInsectPreamble = settings.aiGenInsectPreambleDefault;
-            listingStandard.Label((TaggedString)"Insect negative prompt:", -1);
+            listingStandard.Label((TaggedString)"Insect negative prompt (empty = default):", -1);
             settings.insectNegativePrompt = listingStandard.TextEntry(settings.insectNegativePrompt);
             listingStandard.GapLine();
             
             listingStandard.Label((TaggedString)"Dragon template", -1, "Placeholders: {size}, {race}, {lifestage}, {description}, {health}.");
             settings.aiGenDragonPreamble = listingStandard.TextEntry(settings.aiGenDragonPreamble);
             if (listingStandard.ButtonText("Reset dragon template")) settings.aiGenDragonPreamble = settings.aiGenDragonPreambleDefault;
-            listingStandard.Label((TaggedString)"Dragon negative prompt:", -1);
+            listingStandard.Label((TaggedString)"Dragon negative prompt (empty = default):", -1);
             settings.dragonNegativePrompt = listingStandard.TextEntry(settings.dragonNegativePrompt);
             listingStandard.GapLine();
             
             listingStandard.Label((TaggedString)"Aquatic template", -1, "Placeholders: {race}, {size}, {lifestage}, {description}, {health}.");
             settings.aiGenAquaticPreamble = listingStandard.TextEntry(settings.aiGenAquaticPreamble);
             if (listingStandard.ButtonText("Reset aquatic template")) settings.aiGenAquaticPreamble = settings.aiGenAquaticPreambleDefault;
-            listingStandard.Label((TaggedString)"Aquatic negative prompt:", -1);
+            listingStandard.Label((TaggedString)"Aquatic negative prompt (empty = default):", -1);
             settings.aquaticNegativePrompt = listingStandard.TextEntry(settings.aquaticNegativePrompt);
             listingStandard.GapLine();
             
             listingStandard.Label((TaggedString)"Plant / Dryad template", -1, "Placeholders: {race}, {size}, {lifestage}, {description}, {health}.");
             settings.aiGenPlantPreamble = listingStandard.TextEntry(settings.aiGenPlantPreamble);
             if (listingStandard.ButtonText("Reset plant template")) settings.aiGenPlantPreamble = settings.aiGenPlantPreambleDefault;
-            listingStandard.Label((TaggedString)"Plant negative prompt:", -1);
+            listingStandard.Label((TaggedString)"Plant negative prompt (empty = default):", -1);
             settings.plantNegativePrompt = listingStandard.TextEntry(settings.plantNegativePrompt);
             listingStandard.GapLine();
             
             listingStandard.Label((TaggedString)"Mechanoid template", -1, "Placeholders: {race}, {size}, {description}, {health}.");
             settings.aiGenMechPreamble = listingStandard.TextEntry(settings.aiGenMechPreamble);
             if (listingStandard.ButtonText("Reset mech template")) settings.aiGenMechPreamble = settings.aiGenMechPreambleDefault;
-            listingStandard.Label((TaggedString)"Mechanoid negative prompt:", -1);
+            listingStandard.Label((TaggedString)"Mechanoid negative prompt (empty = default):", -1);
             settings.mechNegativePrompt = listingStandard.TextEntry(settings.mechNegativePrompt);
             listingStandard.GapLine();
             
             listingStandard.Label((TaggedString)"Entity template (undead, demons, elementals, etc.)", -1, "Placeholders: {race}, {size}, {description}, {health}.");
             settings.aiGenEntityPreamble = listingStandard.TextEntry(settings.aiGenEntityPreamble);
             if (listingStandard.ButtonText("Reset entity template")) settings.aiGenEntityPreamble = settings.aiGenEntityPreambleDefault;
-            listingStandard.Label((TaggedString)"Entity negative prompt:", -1);
+            listingStandard.Label((TaggedString)"Entity negative prompt (empty = default):", -1);
             settings.entityNegativePrompt = listingStandard.TextEntry(settings.entityNegativePrompt);
             listingStandard.GapLine();
             
             listingStandard.Label((TaggedString)"Other / Unknown template (fallback)", -1, "Placeholders: {race}, {description}, {health}.");
             settings.aiGenOtherPreamble = listingStandard.TextEntry(settings.aiGenOtherPreamble);
             if (listingStandard.ButtonText("Reset other template")) settings.aiGenOtherPreamble = settings.aiGenOtherPreambleDefault;
-            listingStandard.Label((TaggedString)"Other negative prompt:", -1);
+            listingStandard.Label((TaggedString)"Other negative prompt (empty = default):", -1);
             settings.otherNegativePrompt = listingStandard.TextEntry(settings.otherNegativePrompt);
             listingStandard.GapLine();
             // ============================================================
