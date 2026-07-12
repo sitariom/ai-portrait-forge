@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+    <!-- ================================================================ -->
+    <!-- Vanilla Animals — Prompts específicos por espécie                -->
+    <!-- ================================================================ -->
+
+    <Avatar.CreaturePromptDef>
+        <defName>Wolf_Timber</defName>
+        <kindDef>Wolf_Timber</kindDef>
+        <category>Animal</category>
+        <prompt>timber wolf, gray fur, amber eyes, powerful build, alert ears, wild canine</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Wolf_Arctic</defName>
+        <kindDef>Wolf_Arctic</kindDef>
+        <category>Animal</category>
+        <prompt>arctic wolf, thick white fur, pale blue eyes, winter predator, snow-covered</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Muffalo</defName>
+        <kindDef>Muffalo</kindDef>
+        <category>Animal</category>
+        <prompt>muffalo, massive shaggy blue-gray wooly herbivore, curved horns, gentle giant</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Thrumbo</defName>
+        <kindDef>Thrumbo</kindDef>
+        <category>Animal</category>
+        <prompt>thrumbo, majestic white furred creature, single spiraling horn, intelligent eyes, ethereal beauty, rare and mysterious</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Boomalope</defName>
+        <kindDef>Boomalope</kindDef>
+        <category>Animal</category>
+        <prompt>boomalope, yellow-orange fur, large bulbous chemical sacs on back, explosive herbivore</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Megasloth</defName>
+        <kindDef>Megasloth</kindDef>
+        <category>Animal</category>
+        <prompt>megasloth, enormous shaggy brown beast, long curved claws, slow-moving giant</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Bear_Grizzly</defName>
+        <kindDef>Bear_Grizzly</kindDef>
+        <category>Animal</category>
+        <prompt>grizzly bear, brown fur, massive powerful build, apex predator, wild</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Bear_Polar</defName>
+        <kindDef>Bear_Polar</kindDef>
+        <category>Animal</category>
+        <prompt>polar bear, white fur, massive arctic predator, powerful, snow environment</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Warg</defName>
+        <kindDef>Warg</kindDef>
+        <category>Animal</category>
+        <prompt>warg, dark furred wolf-like beast, glowing eyes, savage predator, muscular, terrifying</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Elephant</defName>
+        <kindDef>Elephant</kindDef>
+        <category>Animal</category>
+        <prompt>elephant, gray wrinkled skin, massive tusks, floppy ears, giant herbivore</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Rhinoceros</defName>
+        <kindDef>Rhinoceros</kindDef>
+        <category>Animal</category>
+        <prompt>rhinoceros, gray armored hide, two horns, massive tank-like herbivore</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Panther</defName>
+        <kindDef>Panther</kindDef>
+        <category>Animal</category>
+        <prompt>black panther, sleek obsidian fur, piercing yellow eyes, stealthy predator, muscular</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Cougar</defName>
+        <kindDef>Cougar</kindDef>
+        <category>Animal</category>
+        <prompt>cougar, tawny fur, muscular feline, amber eyes, mountain predator</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Lynx</defName>
+        <kindDef>Lynx</kindDef>
+        <category>Animal</category>
+        <prompt>lynx, spotted gray-brown fur, tufted ears, bobtail, cold climate feline hunter</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Chicken</defName>
+        <kindDef>Chicken</kindDef>
+        <category>Animal</category>
+        <prompt>chicken, white feathers, red comb, domestic fowl, farm bird</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Cow</defName>
+        <kindDef>Cow</kindDef>
+        <category>Animal</category>
+        <prompt>cow, black and white spotted hide, gentle bovine, farm animal</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Horse</defName>
+        <kindDef>Horse</kindDef>
+        <category>Animal</category>
+        <prompt>horse, brown coat, flowing mane, muscular equine, domesticated</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Husky</defName>
+        <kindDef>Husky</kindDef>
+        <category>Animal</category>
+        <prompt>husky dog, gray and white fur, blue eyes, curled tail, sled dog, loyal companion</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>LabradorRetriever</defName>
+        <kindDef>LabradorRetriever</kindDef>
+        <category>Animal</category>
+        <prompt>labrador retriever, golden-yellow fur, floppy ears, friendly dog, loyal companion</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>YorkshireTerrier</defName>
+        <kindDef>YorkshireTerrier</kindDef>
+        <category>Animal</category>
+        <prompt>yorkshire terrier, tiny dog, silky brown-gray fur, perky ears, small companion</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Cat</defName>
+        <kindDef>Cat</kindDef>
+        <category>Animal</category>
+        <prompt>cat, orange tabby fur, green eyes, domestic feline, graceful, independent</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Alpaca</defName>
+        <kindDef>Alpaca</kindDef>
+        <category>Animal</category>
+        <prompt>alpaca, fluffy cream-white wool, long neck, gentle domesticated camelid</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Chinchilla</defName>
+        <kindDef>Chinchilla</kindDef>
+        <category>Animal</category>
+        <prompt>chinchilla, incredibly soft gray fur, large round ears, tiny rodent</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Raccoon</defName>
+        <kindDef>Raccoon</kindDef>
+        <category>Animal</category>
+        <prompt>raccoon, gray fur, black mask around eyes, striped tail, clever scavenger</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Rat</defName>
+        <kindDef>Rat</kindDef>
+        <category>Animal</category>
+        <prompt>rat, brown-gray fur, hairless tail, whiskers, scavenger rodent</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Squirrel</defName>
+        <kindDef>Squirrel</kindDef>
+        <category>Animal</category>
+        <prompt>squirrel, reddish-brown fur, bushy tail, small agile rodent</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Tortoise</defName>
+        <kindDef>Tortoise</kindDef>
+        <category>Animal</category>
+        <prompt>tortoise, domed shell, scaled legs, slow ancient reptile</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Iguana</defName>
+        <kindDef>Iguana</kindDef>
+        <category>Animal</category>
+        <prompt>iguana, green scales, spiky dorsal crest, long tail, tropical lizard</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Cobra</defName>
+        <kindDef>Cobra</kindDef>
+        <category>Animal</category>
+        <prompt>cobra, hooded serpent, scales, forked tongue, venomous snake</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Monkey</defName>
+        <kindDef>Monkey</kindDef>
+        <category>Animal</category>
+        <prompt>monkey, brown fur, long prehensile tail, expressive face, agile primate</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <!-- ================================================================ -->
+    <!-- Insects — Megaspider and variants                                -->
+    <!-- ================================================================ -->
+
+    <Avatar.CreaturePromptDef>
+        <defName>Megaspider</defName>
+        <kindDef>Megaspider</kindDef>
+        <category>Insect</category>
+        <prompt>megaspider, massive chitinous insect, multiple glowing eyes, razor mandibles, cave horror</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Spelopede</defName>
+        <kindDef>Spelopede</kindDef>
+        <category>Insect</category>
+        <prompt>spelopede, giant armored centipede-like insect, segmented body, countless legs</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Megascarab</defName>
+        <kindDef>Megascarab</kindDef>
+        <category>Insect</category>
+        <prompt>megascarab, large beetle, iridescent shell, horned, insect</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <!-- ================================================================ -->
+    <!-- Mechanoids                                                       -->
+    <!-- ================================================================ -->
+
+    <Avatar.CreaturePromptDef>
+        <defName>Mech_Scyther</defName>
+        <kindDef>Mech_Scyther</kindDef>
+        <category>Mechanoid</category>
+        <prompt>scyther mechanoid, sleek humanoid killer robot, twin blade arms, single red optic sensor</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Mech_Centipede</defName>
+        <kindDef>Mech_Centipede</kindDef>
+        <category>Mechanoid</category>
+        <prompt>centipede mechanoid, massive segmented war machine, heavy cannons, tank-like, armored</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Mech_Lancer</defName>
+        <kindDef>Mech_Lancer</kindDef>
+        <category>Mechanoid</category>
+        <prompt>lancer mechanoid, thin sniper robot, needle gun arm, single optical sensor</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Mech_Pikeman</defName>
+        <kindDef>Mech_Pikeman</kindDef>
+        <category>Mechanoid</category>
+        <prompt>pikeman mechanoid, long-range needle gun, thin mechanical frame, sniper unit</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Mech_Termite</defName>
+        <kindDef>Mech_Termite</kindDef>
+        <category>Mechanoid</category>
+        <prompt>termite mechanoid, thump cannon, heavy siege unit, industrial demolisher</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Mech_Tesseron</defName>
+        <kindDef>Mech_Tesseron</kindDef>
+        <category>Mechanoid</category>
+        <prompt>tesseron mechanoid, microwave beam weapon, energy artillery, glowing radiators</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Mech_Legionary</defName>
+        <kindDef>Mech_Legionary</kindDef>
+        <category>Mechanoid</category>
+        <prompt>legionary mechanoid, wide shield generator, needle gun, defensive unit</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <!-- ================================================================ -->
+    <!-- DLC Anomaly Entities                                             -->
+    <!-- ================================================================ -->
+
+    <Avatar.CreaturePromptDef>
+        <defName>Shambler</defName>
+        <kindDef>Shambler</kindDef>
+        <category>AnomalyEntity</category>
+        <prompt>shambler, undead rotting humanoid, vacant stare, pallid decaying flesh, horror</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Revenant</defName>
+        <kindDef>Revenant</kindDef>
+        <category>AnomalyEntity</category>
+        <prompt>revenant, ethereal ghostly apparition, translucent spectral form, cold blue glow, nightmare entity</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Noctol</defName>
+        <kindDef>Noctol</kindDef>
+        <category>AnomalyEntity</category>
+        <prompt>noctol, dark winged creature, leathery membrane wings, glowing eyes, cave horror</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Fleshbeast</defName>
+        <kindDef>Fleshbeast</kindDef>
+        <category>AnomalyEntity</category>
+        <prompt>fleshbeast, amorphous mass of writhing flesh, multiple eyes and mouths, body horror</prompt>
+    </Avatar.CreaturePromptDef>
+
+    <Avatar.CreaturePromptDef>
+        <defName>Devourer</defName>
+        <kindDef>Devourer</kindDef>
+        <category>AnomalyEntity</category>
+        <prompt>devourer, massive maw, rows of jagged teeth, pulsating flesh, cosmic predator</prompt>
+    </Avatar.CreaturePromptDef>
+
+</Defs>

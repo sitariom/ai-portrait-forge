@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>VFET_Apparel_TribalHeavy</defName>
+        <unisexPath>VanillaExpanded/VFE_Tribals/TribalHeavy</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>VFET_Apparel_TribalLight</defName>
+        <unisexPath>VanillaExpanded/VFE_Tribals/TribalLight</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>VFET_Apparel_TribalWar</defName>
+        <unisexPath>VanillaExpanded/VFE_Tribals/TribalWar</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+</Defs>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+    <Avatar.AvatarHeadHediffDef>
+        <defName>Eyes_DMS_ProstheticEye</defName>
+        <typeName>DMS_ProstheticEye</typeName>
+        <unisexPath>DMS/ProstheticEye</unisexPath>
+    </Avatar.AvatarHeadHediffDef>
+
+    <Avatar.AvatarHeadgearDef>
+        <defName>DMS_Apparel_ArmyCap</defName>
+        <hideTop>16</hideTop>
+        <unisexPath>DMS/ArmyCap</unisexPath>
+    </Avatar.AvatarHeadgearDef>
+
+    <Avatar.AvatarHeadgearDef>
+        <defName>DMS_Apparel_Beret</defName>
+        <hideTop>14</hideTop>
+        <unisexPath>DMS/Beret</unisexPath>
+    </Avatar.AvatarHeadgearDef>
+
+    <Avatar.AvatarHeadgearDef>
+        <defName>DMS_Apparel_GarrisionCap</defName>
+        <hideTop>14</hideTop>
+        <unisexPath>DMS/GarrisonCap</unisexPath>
+    </Avatar.AvatarHeadgearDef>
+
+    <Avatar.AvatarHeadgearDef>
+        <defName>DMS_Apparel_HazardSuit</defName>
+        <hideHair>true</hideHair>
+        <hideBeard>true</hideBeard>
+        <unisexPath>DMS/HazardSuit</unisexPath>
+    </Avatar.AvatarHeadgearDef>
+
+    <Avatar.AvatarHeadgearDef>
+        <defName>DMS_Apparel_SoftKepi</defName>
+        <hideTop>16</hideTop>
+        <unisexPath>DMS/SoftKepi</unisexPath>
+    </Avatar.AvatarHeadgearDef>
+
+    <Avatar.AvatarHeadgearDef>
+        <defName>DMS_Apparel_TacticalHelmet</defName>
+        <hideTop>18</hideTop>
+        <unisexPath>DMS/TacticalHelmet</unisexPath>
+    </Avatar.AvatarHeadgearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>DMS_Apparel_BionicSuit</defName>
+        <femalePath>DMS/BionicSuit_Female</femalePath>
+        <malePath>DMS/BionicSuit_Male</malePath>
+    </Avatar.AvatarBodygearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>DMS_Apparel_GarrisionCoat</defName>
+        <unisexPath>DMS/GarrisonCoat</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>DMS_Apparel_PowerSkelton</defName>
+        <unisexPath>DMS/PowerSkeleton</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>DMS_Apparel_TacticalVest</defName>
+        <unisexPath>DMS/TacticalVest</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>DMS_Apparel_UnitSuit</defName>
+        <unisexPath>DMS/UnitSuit</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+</Defs>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+    <Avatar.AvatarEarsDef>
+        <defName>Ears_Feline</defName>
+        <geneName>VRE_FelineEars</geneName>
+        <unisexPath>Core/Unisex/Ears/Ears_Cat</unisexPath>
+    </Avatar.AvatarEarsDef>
+
+</Defs>

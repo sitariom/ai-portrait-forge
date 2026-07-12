@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+    <Avatar.AvatarFacegearDef>
+        <defName>Jewelry_Earring</defName>
+        <unisexPath>Jewelry/Earring</unisexPath>
+    </Avatar.AvatarFacegearDef>
+
+    <Avatar.AvatarFacegearDef>
+        <defName>Jewelry_Earring_Silver</defName>
+        <unisexPath>Jewelry/EarringSilver</unisexPath>
+    </Avatar.AvatarFacegearDef>
+
+    <Avatar.AvatarFacegearDef>
+        <defName>Jewelry_EltexEarring</defName>
+        <unisexPath>Jewelry/Earring</unisexPath>
+    </Avatar.AvatarFacegearDef>
+
+    <Avatar.AvatarFacegearDef>
+        <defName>Jewelry_EltexEarring_Silver</defName>
+        <unisexPath>Jewelry/EarringSilver</unisexPath>
+    </Avatar.AvatarFacegearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>Jewelry_Necklace</defName>
+        <unisexPath>Jewelry/Necklace</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>Jewelry_Necklace_Silver</defName>
+        <unisexPath>Jewelry/NecklaceSilver</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>Jewelry_PsychicNecklace</defName>
+        <unisexPath>Jewelry/Necklace</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>Jewelry_PsychicNecklace_Silver</defName>
+        <unisexPath>Jewelry/NecklaceSilver</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+</Defs>

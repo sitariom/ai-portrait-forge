@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>VRE_AncientAstrosuit</defName>
+        <unisexPath>VanillaExpanded/VRE_Fungoids/AncientAstrosuit</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+</Defs>

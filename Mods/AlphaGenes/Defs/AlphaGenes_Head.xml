@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+    <Avatar.AvatarHeadDef ParentName="Custom">
+        <defName>Head_AG_SlugFace_Normal</defName>
+        <unisexPath>AlphaGenes/SlugFace</unisexPath>
+    </Avatar.AvatarHeadDef>
+
+    <Avatar.AvatarHeadDef ParentName="Custom">
+        <defName>Head_AG_SlugFace_Narrow</defName>
+        <unisexPath>AlphaGenes/SlugFace</unisexPath>
+    </Avatar.AvatarHeadDef>
+
+    <Avatar.AvatarHeadDef ParentName="Custom">
+        <defName>Head_AG_SlugFace_Wide</defName>
+        <unisexPath>AlphaGenes/SlugFace</unisexPath>
+    </Avatar.AvatarHeadDef>
+
+    <Avatar.AvatarNoseDef>
+        <defName>Head_FoxFace</defName>
+        <geneName>AG_FoxFace</geneName>
+        <femalePath>Common/Nose/Feline_Female</femalePath>
+        <malePath>Common/Nose/Feline_Male</malePath>
+        <femaleChildPath>Common/Nose/Feline_FemaleChild</femaleChildPath>
+        <maleChildPath>Common/Nose/Feline_MaleChild</maleChildPath>
+        <unisexNewbornPath>Common/Nose/Feline_Newborn</unisexNewbornPath>
+    </Avatar.AvatarNoseDef>
+
+</Defs>

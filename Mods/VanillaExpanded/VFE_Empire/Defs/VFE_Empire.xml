@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+    <Avatar.AvatarHeadgearDef>
+        <defName>VFEE_Apparel_JanissaryHelmet</defName>
+        <hideHair>true</hideHair>
+        <unisexPath>VanillaExpanded/VFE_Empire/JanissaryHelmet</unisexPath>
+    </Avatar.AvatarHeadgearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>VFEE_Apparel_JanissaryCuirass</defName>
+        <unisexPath>VanillaExpanded/VFE_Empire/JanissaryCuirass</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+    <Avatar.AvatarHeadgearDef>
+        <defName>VFEE_Apparel_DeserterHelmet</defName>
+        <hideHair>true</hideHair>
+        <unisexPath>VanillaExpanded/VFE_Empire/DeserterHelmet</unisexPath>
+    </Avatar.AvatarHeadgearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>VFEE_Apparel_ArmorDeserter</defName>
+        <unisexPath>VanillaExpanded/VFE_Empire/ArmorDeserter</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+    <Avatar.AvatarHeadgearDef>
+        <defName>VFEE_Apparel_AbsolverHelmet</defName>
+        <hideHair>true</hideHair>
+        <hideBeard>true</hideBeard>
+        <unisexPath>VanillaExpanded/VFE_Empire/AbsolverHelmet</unisexPath>
+    </Avatar.AvatarHeadgearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>VFEE_Apparel_ArmorAbsolver</defName>
+        <unisexPath>VanillaExpanded/VFE_Empire/ArmorAbsolver</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+    <Avatar.AvatarHeadgearDef>
+        <defName>VFEE_Apparel_TechfriarCrown</defName>
+        <hideHair>true</hideHair>
+        <hideBeard>true</hideBeard>
+        <unisexPath>VanillaExpanded/VFE_Empire/TechfriarCrown</unisexPath>
+    </Avatar.AvatarHeadgearDef>
+
+    <Avatar.AvatarBodygearDef>
+        <defName>VFE_Apparel_StellicRobe</defName>
+        <unisexPath>VanillaExpanded/VFE_Empire/StellicRobe</unisexPath>
+    </Avatar.AvatarBodygearDef>
+
+    <!-- AIGenPromptDef -->
+    <Avatar.AIGenPromptDef>
+        <defName>VFEE_Apparel_ArmorDeserter</defName>
+        <prompt>high-tech armor, purple cape</prompt>
+        <overrides>T-shirt, button-down shirt</overrides>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>VFEE_Apparel_DeserterHelmet</defName>
+        <prompt>high-tech open helmet with antenna</prompt>
+        <overrides>bald, shaved head</overrides>
+    </Avatar.AIGenPromptDef>
+
+</Defs>

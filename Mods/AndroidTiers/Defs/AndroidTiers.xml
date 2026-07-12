@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+    <Avatar.AvatarHeadDef ParentName="Custom">
+        <defName>Head_ATR_Tier1_None_ATR_Tier1Android</defName>
+        <forceBodyType>ATR_Tier1</forceBodyType>
+        <unisexPath>AndroidTiers/HeadTier1</unisexPath>
+    </Avatar.AvatarHeadDef>
+
+    <Avatar.AvatarBodyDef>
+        <defName>Body_ATR_Tier1</defName>
+        <typeName>ATR_Tier1</typeName>
+        <unisexPath>AndroidTiers/BodyTier1</unisexPath>
+    </Avatar.AvatarBodyDef>
+
+    <Avatar.AvatarHeadDef ParentName="Custom">
+        <defName>Head_ATR_Tier2_None_ATR_Tier2Android</defName>
+        <forceBodyType>ATR_Tier2</forceBodyType>
+        <unisexPath>AndroidTiers/HeadTier2</unisexPath>
+    </Avatar.AvatarHeadDef>
+
+    <Avatar.AvatarBodyDef>
+        <defName>Body_ATR_Tier2</defName>
+        <typeName>ATR_Tier2</typeName>
+        <unisexPath>AndroidTiers/BodyTier2</unisexPath>
+    </Avatar.AvatarBodyDef>
+
+    <Avatar.AvatarHeadDef ParentName="Custom">
+        <defName>Head_ATR_Tier3_None_ATR_Tier3Android</defName>
+        <forceBodyType>ATR_Tier3</forceBodyType>
+        <unisexPath>AndroidTiers/HeadTier3</unisexPath>
+    </Avatar.AvatarHeadDef>
+
+    <Avatar.AvatarBodyDef>
+        <defName>Body_ATR_Tier3</defName>
+        <typeName>ATR_Tier3</typeName>
+        <unisexPath>AndroidTiers/BodyTier3</unisexPath>
+    </Avatar.AvatarBodyDef>
+
+    <Avatar.AvatarHeadDef ParentName="Custom">
+        <defName>Head_ATR_Tier4_None_ATR_Tier4Android</defName>
+        <forceBodyType>ATR_Tier4</forceBodyType>
+        <unisexPath>AndroidTiers/HeadTier4</unisexPath>
+    </Avatar.AvatarHeadDef>
+
+    <Avatar.AvatarBodyDef>
+        <defName>Body_ATR_Tier4</defName>
+        <typeName>ATR_Tier4</typeName>
+        <unisexPath>AndroidTiers/BodyTier4</unisexPath>
+    </Avatar.AvatarBodyDef>
+
+</Defs>
