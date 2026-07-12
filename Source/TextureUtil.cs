@@ -119,9 +119,9 @@ namespace Avatar
         }
 
         /// <summary>
-        /// Remove fundo branco da imagem. Flood-fill a partir das bordas,
-        /// removendo apenas pixels muito claros (brilho > 210).
-        /// O personagem nunca é afetado porque pele/roupa não chega a 210.
+        /// Remove fundo branco. Flood-fill das bordas removendo pixels claros.
+        /// Dois passes: 195 (agressivo) depois 210 (conservador) se o primeiro falhar.
+        /// Dilatação de 1px nas bordas para suavizar transição.
         /// </summary>
         public static void RemoveBackground(string path)
         {
@@ -133,80 +133,9 @@ namespace Avatar
                     return;
                 if (w < 20 || h < 20) return;
                 
-                int total = w * h;
-                byte[] brightness = new byte[total];
-                for (int i = 0; i < total; i++)
-                {
-                    int p = i * 4;
-                    int max = rgba[p];
-                    if (rgba[p+1] > max) max = rgba[p+1];
-                    if (rgba[p+2] > max) max = rgba[p+2];
-                    brightness[i] = (byte)max;
-                }
-                
-                // Flood-fill from edges, only including bright pixels (>= 210)
-                bool[] visited = new bool[total];
-                bool[] isBg = new bool[total];
-                var queue = new System.Collections.Generic.Queue<int>();
-                
-                // Seed all edge pixels that are bright enough
-                for (int x = 0; x < w; x++)
-                {
-                    if (brightness[x] >= 210) { isBg[x] = true; visited[x] = true; queue.Enqueue(x); }
-                    int b = (h - 1) * w + x;
-                    if (brightness[b] >= 210) { isBg[b] = true; visited[b] = true; queue.Enqueue(b); }
-                }
-                for (int y = 1; y < h - 1; y++)
-                {
-                    int l = y * w;
-                    if (brightness[l] >= 210) { isBg[l] = true; visited[l] = true; queue.Enqueue(l); }
-                    int r = y * w + w - 1;
-                    if (brightness[r] >= 210) { isBg[r] = true; visited[r] = true; queue.Enqueue(r); }
-                }
-                
-                // Flood fill
-                while (queue.Count > 0)
-                {
-                    int idx = queue.Dequeue();
-                    int x = idx % w, y = idx / w;
-                    int[] nx = { x-1, x+1, x, x };
-                    int[] ny = { y, y, y-1, y+1 };
-                    for (int d = 0; d < 4; d++)
-                    {
-                        int nx2 = nx[d], ny2 = ny[d];
-                        if (nx2 < 0 || nx2 >= w || ny2 < 0 || ny2 >= h) continue;
-                        int nidx = ny2 * w + nx2;
-                        if (!visited[nidx] && brightness[nidx] >= 210)
-                        {
-                            visited[nidx] = true;
-                            isBg[nidx] = true;
-                            queue.Enqueue(nidx);
-                        }
-                    }
-                }
-                
-                // Count and safety check
-                int bgCount = 0;
-                for (int i = 0; i < total; i++) if (isBg[i]) bgCount++;
-                float pct = (float)bgCount / total;
-                if (pct < 0.03f || pct > 0.45f) return;
-                
-                // Apply transparency + anti-alias edge
-                for (int i = 0; i < total; i++)
-                {
-                    int p = i * 4;
-                    if (isBg[i])
-                    {
-                        rgba[p+3] = 0;
-                    }
-                    else if (brightness[i] >= 200)
-                    {
-                        // Edge pixel: partially transparent based on brightness
-                        int alpha = 255 - (brightness[i] - 190) * 4;
-                        if (alpha < 0) alpha = 0;
-                        if (alpha < rgba[p+3]) rgba[p+3] = (byte)alpha;
-                    }
-                }
+                // Try with lower threshold first, then higher if too little removed
+                if (!TryRemoveBg(rgba, w, h, 195))
+                    TryRemoveBg(rgba, w, h, 210);
                 
                 byte[] pngOut = EncodeRGBAtoPNG(rgba, w, h);
                 System.IO.File.WriteAllBytes(path, pngOut);
@@ -215,6 +144,96 @@ namespace Avatar
             {
                 Verse.Log.Warning("Avatar: Background removal failed: " + e.Message);
             }
+        }
+        
+        private static bool TryRemoveBg(byte[] rgba, int w, int h, int threshold)
+        {
+            int total = w * h;
+            
+            // Compute brightness (max of R,G,B)
+            byte[] bright = new byte[total];
+            for (int i = 0; i < total; i++)
+            {
+                int p = i * 4;
+                int m = rgba[p];
+                if (rgba[p+1] > m) m = rgba[p+1];
+                if (rgba[p+2] > m) m = rgba[p+2];
+                bright[i] = (byte)m;
+            }
+            
+            // Flood-fill from edges
+            bool[] visited = new bool[total];
+            bool[] isBg = new bool[total];
+            var q = new System.Collections.Generic.Queue<int>();
+            
+            for (int x = 0; x < w; x++)
+            {
+                if (bright[x] >= threshold && !visited[x])
+                { visited[x] = true; isBg[x] = true; q.Enqueue(x); }
+                int b = (h-1)*w + x;
+                if (bright[b] >= threshold && !visited[b])
+                { visited[b] = true; isBg[b] = true; q.Enqueue(b); }
+            }
+            for (int y = 1; y < h-1; y++)
+            {
+                int l = y*w, r = y*w + w-1;
+                if (bright[l] >= threshold && !visited[l])
+                { visited[l] = true; isBg[l] = true; q.Enqueue(l); }
+                if (bright[r] >= threshold && !visited[r])
+                { visited[r] = true; isBg[r] = true; q.Enqueue(r); }
+            }
+            
+            while (q.Count > 0)
+            {
+                int idx = q.Dequeue();
+                int x = idx % w, y = idx / w;
+                if (x > 0)     { int n = idx - 1; if (!visited[n] && bright[n] >= threshold) { visited[n] = true; isBg[n] = true; q.Enqueue(n); } }
+                if (x < w - 1) { int n = idx + 1; if (!visited[n] && bright[n] >= threshold) { visited[n] = true; isBg[n] = true; q.Enqueue(n); } }
+                if (y > 0)     { int n = idx - w; if (!visited[n] && bright[n] >= threshold) { visited[n] = true; isBg[n] = true; q.Enqueue(n); } }
+                if (y < h - 1) { int n = idx + w; if (!visited[n] && bright[n] >= threshold) { visited[n] = true; isBg[n] = true; q.Enqueue(n); } }
+            }
+            
+            int bgCount = 0;
+            for (int i = 0; i < total; i++) if (isBg[i]) bgCount++;
+            float pct = (float)bgCount / total;
+            
+            if (pct < 0.02f || pct > 0.50f) return false;
+            
+            // Apply: bg pixels → alpha 0
+            for (int i = 0; i < total; i++)
+                if (isBg[i]) rgba[i*4+3] = 0;
+            
+            // Dilate: 1px border around transparent → partial alpha (smooth edge)
+            byte[] newAlpha = new byte[total];
+            for (int i = 0; i < total; i++) newAlpha[i] = rgba[i*4+3];
+            
+            for (int i = 0; i < total; i++)
+            {
+                if (rgba[i*4+3] == 0) continue; // already transparent
+                int x = i % w, y = i / w;
+                // Check if any neighbor is transparent
+                bool nearTransparent = false;
+                if (x > 0 && rgba[(i-1)*4+3] == 0) nearTransparent = true;
+                else if (x < w-1 && rgba[(i+1)*4+3] == 0) nearTransparent = true;
+                else if (y > 0 && rgba[(i-w)*4+3] == 0) nearTransparent = true;
+                else if (y < h-1 && rgba[(i+w)*4+3] == 0) nearTransparent = true;
+                
+                if (nearTransparent && bright[i] >= (threshold - 15))
+                {
+                    // Blend alpha based on brightness
+                    int b = bright[i];
+                    int a = 255 - (b - (threshold - 30)) * 8;
+                    if (a < 30) a = 30;
+                    if (a > 255) a = 255;
+                    if (a < newAlpha[i]) newAlpha[i] = (byte)a;
+                }
+            }
+            
+            for (int i = 0; i < total; i++)
+                rgba[i*4+3] = newAlpha[i];
+            
+            Verse.Log.Message("Avatar: BG removed " + bgCount + "/" + total + " pixels (" + pct.ToString("F1") + "%) threshold=" + threshold);
+            return true;
         }
         
         /// <summary>Decodes a PNG file into raw RGBA32 bytes. Pure .NET, no Unity.</summary>
