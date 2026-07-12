@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
     <name>AI Portrait Forge</name>
-    <author>Fork of Avatar - Personas by Meathax &amp; bolphen, expanded by sitariom</author>
+    <author>sitariom</author>
+    <url>https://github.com/sitariom/ai-portrait-forge</url>
     <supportedVersions>
         <li>1.6</li>
     </supportedVersions>
@@ -19,5 +20,6 @@
         <li>Ludeon.RimWorld</li>
         <li>brrainz.harmony</li>
     </loadAfter>
-    <description>AI-generated portraits for ANY pawn — humans, animals, mechs, creatures. 40 art styles, 6 cloud API providers, 22 creature categories. Automatic background removal. No local GPU required. Fork of Avatar - Personas (steam://url/CommunityFilePage/3111373293) and Avatar (steam://url/CommunityFilePage/3726781409).</description>
+    <description>AI-generated portraits for ANY pawn — humans, animals, mechs, creatures, and all modded races. Powered by cloud AI APIs: pick from 40 art styles, 6 providers, and 22 creature-specific prompt templates. Automatic background removal with transparent PNG output. No GPU or local model downloads needed — just an API key and right-click any pawn.
+Features: customizable positive &amp; negative prompts, per-category templates, API key manager, Test Connection, pixel-art fallback avatars, mod support for 50+ content packs. Inspired by Avatar - Personas (Meathax).</description>
 </ModMetaData>
