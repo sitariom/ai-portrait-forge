@@ -127,86 +127,77 @@ namespace Avatar
         {
             try
             {
-                // Read RGBA32 pixels directly from PNG bytes
                 byte[] rgba;
                 int w, h;
                 if (!DecodePngToRGBA(path, out rgba, out w, out h))
                     return;
                 
+                if (w < 20 || h < 20) return; // Too small
+                
                 int totalPixels = w * h;
                 
-                // Sample ALL edge pixels to find background color range
-                int edgePixels = w * 2 + (h - 2) * 2;
-                float minR = 255, minG = 255, minB = 255;
-                float maxR = 0, maxG = 0, maxB = 0;
+                // Sample ONLY the 4 extreme corners (5x5 pixel area each, inset 2px from edge)
+                int sampleSize = 5;
+                float[] corners = new float[12]; // R,G,B for 4 corners
+                SampleCorner(rgba, w, h, 2, 2, sampleSize, out corners[0], out corners[1], out corners[2]);
+                SampleCorner(rgba, w, h, w - 2 - sampleSize, 2, sampleSize, out corners[3], out corners[4], out corners[5]);
+                SampleCorner(rgba, w, h, 2, h - 2 - sampleSize, sampleSize, out corners[6], out corners[7], out corners[8]);
+                SampleCorner(rgba, w, h, w - 2 - sampleSize, h - 2 - sampleSize, sampleSize, out corners[9], out corners[10], out corners[11]);
                 
-                for (int x = 0; x < w; x++)
-                {
-                    SampleEdge(rgba, x, 0, w, ref minR, ref minG, ref minB, ref maxR, ref maxG, ref maxB);
-                    SampleEdge(rgba, x, h - 1, w, ref minR, ref minG, ref minB, ref maxR, ref maxG, ref maxB);
-                }
-                for (int y = 1; y < h - 1; y++)
-                {
-                    SampleEdge(rgba, 0, y, w, ref minR, ref minG, ref minB, ref maxR, ref maxG, ref maxB);
-                    SampleEdge(rgba, w - 1, y, w, ref minR, ref minG, ref minB, ref maxR, ref maxG, ref maxB);
-                }
+                // Check if all 4 corners are similar (uniform background)
+                float avgR = (corners[0]+corners[3]+corners[6]+corners[9]) / 4f;
+                float avgG = (corners[1]+corners[4]+corners[7]+corners[10]) / 4f;
+                float avgB = (corners[2]+corners[5]+corners[8]+corners[11]) / 4f;
                 
-                float bgR = (minR + maxR) / 2f;
-                float bgG = (minG + maxG) / 2f;
-                float bgB = (minB + maxB) / 2f;
+                float maxDevR = MaxDev(corners[0], corners[3], corners[6], corners[9], avgR);
+                float maxDevG = MaxDev(corners[1], corners[4], corners[7], corners[10], avgG);
+                float maxDevB = MaxDev(corners[2], corners[5], corners[8], corners[11], avgB);
                 
-                // Dynamic tolerance: larger of: (range * 1.5) or 40
-                float range = (maxR - minR + maxG - minG + maxB - minB) / 3f;
-                float tolerance = range * 1.2f;
-                if (tolerance < 25f) tolerance = 25f;
-                if (tolerance > 70f) tolerance = 70f;
+                // If corners are too different, background is not uniform — skip
+                if (maxDevR > 40f || maxDevG > 40f || maxDevB > 40f)
+                    return;
                 
-                // Edge-flood: mark edge-connected background pixels
+                // Fixed conservative tolerance
+                float tolerance = 20f;
+                
                 bool[] visited = new bool[totalPixels];
                 bool[] isBg = new bool[totalPixels];
                 var queue = new System.Collections.Generic.Queue<int>();
                 
-                for (int x = 0; x < w; x++)
-                {
-                    TrySeed(rgba, visited, isBg, queue, x, 0, w, bgR, bgG, bgB, tolerance);
-                    TrySeed(rgba, visited, isBg, queue, x, h - 1, w, bgR, bgG, bgB, tolerance);
-                }
-                for (int y = 1; y < h - 1; y++)
-                {
-                    TrySeed(rgba, visited, isBg, queue, 0, y, w, bgR, bgG, bgB, tolerance);
-                    TrySeed(rgba, visited, isBg, queue, w - 1, y, w, bgR, bgG, bgB, tolerance);
-                }
+                // Seed ONLY from the 4 corners (not all edges)
+                TrySeed(rgba, visited, isBg, queue, 2, 2, w, avgR, avgG, avgB, tolerance);
+                TrySeed(rgba, visited, isBg, queue, w - 3, 2, w, avgR, avgG, avgB, tolerance);
+                TrySeed(rgba, visited, isBg, queue, 2, h - 3, w, avgR, avgG, avgB, tolerance);
+                TrySeed(rgba, visited, isBg, queue, w - 3, h - 3, w, avgR, avgG, avgB, tolerance);
                 
+                // Flood fill (4-directional only — no diagonals)
                 while (queue.Count > 0)
                 {
                     int idx = queue.Dequeue();
                     int x = idx % w;
                     int y = idx / w;
-                    TryNeighbor(rgba, visited, isBg, queue, x - 1, y, w, h, bgR, bgG, bgB, tolerance);
-                    TryNeighbor(rgba, visited, isBg, queue, x + 1, y, w, h, bgR, bgG, bgB, tolerance);
-                    TryNeighbor(rgba, visited, isBg, queue, x, y - 1, w, h, bgR, bgG, bgB, tolerance);
-                    TryNeighbor(rgba, visited, isBg, queue, x, y + 1, w, h, bgR, bgG, bgB, tolerance);
+                    if (x > 0) TrySeed(rgba, visited, isBg, queue, x - 1, y, w, avgR, avgG, avgB, tolerance);
+                    if (x < w - 1) TrySeed(rgba, visited, isBg, queue, x + 1, y, w, avgR, avgG, avgB, tolerance);
+                    if (y > 0) TrySeed(rgba, visited, isBg, queue, x, y - 1, w, avgR, avgG, avgB, tolerance);
+                    if (y < h - 1) TrySeed(rgba, visited, isBg, queue, x, y + 1, w, avgR, avgG, avgB, tolerance);
                 }
                 
-                // Safety: if >50% of image would become transparent, skip (subject being eaten)
+                // Safety: if >30% would become transparent, skip
                 int bgCount = 0;
                 for (int i = 0; i < totalPixels; i++)
                     if (isBg[i]) bgCount++;
                 
-                if (bgCount > totalPixels * 0.55f)
-                    return; // Too much removed — likely eating the subject
+                if (bgCount > totalPixels * 0.30f || bgCount < totalPixels * 0.02f)
+                    return;
                 
-                // Apply transparency to background pixels
+                // Apply transparency
                 for (int i = 0; i < totalPixels; i++)
                 {
                     if (isBg[i])
                         rgba[i * 4 + 3] = 0;
                 }
                 
-                // Hole fill: any transparent pixel completely surrounded by opaque should be made opaque
-                FillEnclosedHoles(rgba, w, h, totalPixels);
-                
-                // Re-encode as PNG
+                // Re-encode
                 byte[] pngOut = EncodeRGBAtoPNG(rgba, w, h);
                 System.IO.File.WriteAllBytes(path, pngOut);
             }
@@ -216,65 +207,33 @@ namespace Avatar
             }
         }
         
-        private static void SampleEdge(byte[] rgba, int x, int y, int w,
-            ref float minR, ref float minG, ref float minB,
-            ref float maxR, ref float maxG, ref float maxB)
+        private static void SampleCorner(byte[] rgba, int w, int h, int startX, int startY, int size,
+            out float avgR, out float avgG, out float avgB)
         {
-            int i = (y * w + x) * 4;
-            float r = rgba[i], g = rgba[i+1], b = rgba[i+2];
-            if (r < minR) minR = r; if (r > maxR) maxR = r;
-            if (g < minG) minG = g; if (g > maxG) maxG = g;
-            if (b < minB) minB = b; if (b > maxB) maxB = b;
+            float r = 0, g = 0, b = 0;
+            int count = 0;
+            int endX = startX + size < w ? startX + size : w;
+            int endY = startY + size < h ? startY + size : h;
+            for (int y = startY; y < endY; y++)
+                for (int x = startX; x < endX; x++)
+                {
+                    int i = (y * w + x) * 4;
+                    r += rgba[i]; g += rgba[i+1]; b += rgba[i+2];
+                    count++;
+                }
+            avgR = r / count;
+            avgG = g / count;
+            avgB = b / count;
         }
         
-        private static void FillEnclosedHoles(byte[] rgba, int w, int h, int totalPixels)
+        private static float MaxDev(float a, float b, float c, float d, float avg)
         {
-            // Build a mask: 255 = "reachable from edge" (background), 0 = "enclosed" (hole or subject)
-            byte[] mask = new byte[totalPixels];
-            var q = new System.Collections.Generic.Queue<int>();
-            
-            // Seed all edge pixels
-            for (int x = 0; x < w; x++)
-            {
-                int iTop = x * 4;
-                int iBot = ((h - 1) * w + x) * 4;
-                if (rgba[iTop+3] == 0) { mask[x] = 255; q.Enqueue(x); }
-                if (rgba[iBot+3] == 0) { mask[(h-1)*w + x] = 255; q.Enqueue((h-1)*w + x); }
-            }
-            for (int y = 1; y < h - 1; y++)
-            {
-                int iLeft = (y * w) * 4;
-                int iRight = (y * w + w - 1) * 4;
-                if (rgba[iLeft+3] == 0) { mask[y*w] = 255; q.Enqueue(y*w); }
-                if (rgba[iRight+3] == 0) { mask[y*w+w-1] = 255; q.Enqueue(y*w+w-1); }
-            }
-            
-            // Flood fill to mark all edge-reachable transparent pixels
-            while (q.Count > 0)
-            {
-                int idx = q.Dequeue();
-                int x = idx % w, y = idx / w;
-                int[] nx = { x-1, x+1, x, x };
-                int[] ny = { y, y, y-1, y+1 };
-                for (int d = 0; d < 4; d++)
-                {
-                    int nx2 = nx[d], ny2 = ny[d];
-                    if (nx2 < 0 || nx2 >= w || ny2 < 0 || ny2 >= h) continue;
-                    int nidx = ny2 * w + nx2;
-                    if (mask[nidx] == 0 && rgba[nidx*4+3] == 0)
-                    {
-                        mask[nidx] = 255;
-                        q.Enqueue(nidx);
-                    }
-                }
-            }
-            
-            // Any transparent pixel NOT reached by the flood = enclosed hole → make opaque
-            for (int i = 0; i < totalPixels; i++)
-            {
-                if (rgba[i*4+3] == 0 && mask[i] == 0)
-                    rgba[i*4+3] = 255;
-            }
+            float da = a - avg; if (da < 0) da = -da;
+            float db = b - avg; if (db < 0) db = -db;
+            float dc = c - avg; if (dc < 0) dc = -dc;
+            float dd = d - avg; if (dd < 0) dd = -dd;
+            return da > db ? (da > dc ? (da > dd ? da : dd) : (dc > dd ? dc : dd))
+                 : db > dc ? (db > dd ? db : dd) : (dc > dd ? dc : dd);
         }
         
         private static void TrySeed(byte[] rgba, bool[] visited, bool[] isBg,
@@ -293,14 +252,6 @@ namespace Avatar
                 isBg[idx] = true;
                 queue.Enqueue(idx);
             }
-        }
-        
-        private static void TryNeighbor(byte[] rgba, bool[] visited, bool[] isBg,
-            System.Collections.Generic.Queue<int> queue, int x, int y, int w, int h,
-            float bgR, float bgG, float bgB, float tol)
-        {
-            if (x < 0 || x >= w || y < 0 || y >= h) return;
-            TrySeed(rgba, visited, isBg, queue, x, y, w, bgR, bgG, bgB, tol);
         }
         
         /// <summary>Decodes a PNG file into raw RGBA32 bytes. Pure .NET, no Unity.</summary>
