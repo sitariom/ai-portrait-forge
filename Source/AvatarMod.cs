@@ -916,6 +916,16 @@ namespace Avatar
                 if (string.IsNullOrEmpty(aiGenMechPreamble)) aiGenMechPreamble = aiGenMechPreambleDefault;
                 if (string.IsNullOrEmpty(aiGenEntityPreamble)) aiGenEntityPreamble = aiGenEntityPreambleDefault;
                 if (string.IsNullOrEmpty(aiGenOtherPreamble)) aiGenOtherPreamble = aiGenOtherPreambleDefault;
+                // Fill empty negative prompts with defaults so they're visible in UI
+                if (string.IsNullOrEmpty(apiNegativePrompt)) apiNegativePrompt = "background, scenery, landscape orientation, horizontal composition, panoramic, wide aspect ratio, nature, outdoor, indoor, room, wall, multiple people, group, crowd, extra characters, extra person, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, missing face, cropped face, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, doll, wax figure, mannequin, duplicate, cloned, mirrored, extra limbs, extra fingers, mutated, fused";
+                if (string.IsNullOrEmpty(animalNegativePrompt)) animalNegativePrompt = "background, scenery, landscape orientation, horizontal composition, panoramic, nature, outdoor, indoor, room, wall, multiple creatures, group, herd, flock, extra animals, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, toy, duplicate, cloned, mirrored, extra legs, extra tails, mutated, fused, human, human face, human hands, anthropomorphic, wrong species, hybrid, chimeric";
+                if (string.IsNullOrEmpty(insectNegativePrompt)) insectNegativePrompt = animalNegativePrompt;
+                if (string.IsNullOrEmpty(dragonNegativePrompt)) dragonNegativePrompt = animalNegativePrompt;
+                if (string.IsNullOrEmpty(aquaticNegativePrompt)) aquaticNegativePrompt = animalNegativePrompt;
+                if (string.IsNullOrEmpty(plantNegativePrompt)) plantNegativePrompt = animalNegativePrompt;
+                if (string.IsNullOrEmpty(mechNegativePrompt)) mechNegativePrompt = animalNegativePrompt + ", organic, flesh, skin, biological, living tissue";
+                if (string.IsNullOrEmpty(entityNegativePrompt)) entityNegativePrompt = animalNegativePrompt + ", normal, ordinary, mundane, realistic, natural, scientific";
+                if (string.IsNullOrEmpty(otherNegativePrompt)) otherNegativePrompt = animalNegativePrompt;
                 AvatarMod.mainManager.SetBGColor(new Color(0,0,0,0));
                 AvatarMod.ClearCachedAvatars();
             }
