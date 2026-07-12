@@ -78,12 +78,18 @@ Each creature category has its own **positive** and **negative** prompt template
 
 ## 🙏 Credits & Thanks
 
-This mod is a fork and massive expansion of the original **"Avatar - Personas"** by **Meathax**.
+**AI Portrait Forge** is a fork of two original projects:
 
-**Original projects that made this possible:**
-- [Avatar - Personas](https://steamcommunity.com/sharedfiles/filedetails/?id=3111373293) by **Meathax** — original pixel-art avatar system and mod compatibility
+| Original | Author | Steam Workshop |
+|----------|--------|---------------|
+| [Avatar - Personas](https://steamcommunity.com/sharedfiles/filedetails/?id=3111373293) | **Meathax** | Original pixel-art avatar system, mod compatibility, and rendering engine |
+| [Avatar](https://steamcommunity.com/sharedfiles/filedetails/?id=3726781409) | **bolphen** | Original codebase foundation and Steam Workshop distribution |
+
+**This fork is identified as a direct descendant of Avatar - Personas** (`packageId: meathax.avatarPersonas`), preserving compatibility with existing saves and mod lists.
+
+**Also thanks to:**
 - [Harmony](https://github.com/pardeike/HarmonyRimWorld) by **Brrainz** — patching library
-- [RimWorld](https://rimworldgame.com) by **Ludeon Studios**
+- [RimWorld](https://rimworldgame.com) by **Ludeon Studios** — the game that makes all this possible
 
 **What changed from the original:**
 - ❌ Removed local ComfyUI/SDXL pipeline (~14GB downloads, GPU required)

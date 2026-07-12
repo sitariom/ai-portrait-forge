@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
     <name>AI Portrait Forge</name>
-    <author>Meathax (original), expanded by simoe</author>
+    <author>Fork of Avatar - Personas by Meathax &amp; bolphen, expanded by simoe</author>
     <supportedVersions>
         <li>1.6</li>
     </supportedVersions>
@@ -18,5 +18,5 @@
         <li>Ludeon.RimWorld</li>
         <li>brrainz.harmony</li>
     </loadAfter>
-    <description>AI-generated portraits for ANY pawn — humans, animals, mechs, creatures. 40 art styles, 6 cloud API providers, 22 creature categories. Automatic background removal. No local GPU required.</description>
+    <description>AI-generated portraits for ANY pawn — humans, animals, mechs, creatures. 40 art styles, 6 cloud API providers, 22 creature categories. Automatic background removal. No local GPU required. Fork of Avatar - Personas (steam://url/CommunityFilePage/3111373293) and Avatar (steam://url/CommunityFilePage/3726781409).</description>
 </ModMetaData>
