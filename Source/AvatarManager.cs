@@ -1664,6 +1664,8 @@ namespace Avatar
             AvatarMod.MarkPending(pawnId);
             AvatarMod.ClearFailedAttempts(pawnId);
 
+            string negPrompt = AvatarMod.GetNegativePromptForPawn(AvatarManager.mod.settings, pawn);
+
             ApiClient.GeneratePortraitAsync(imagePath, prompts, outputPath, (success, error) =>
             {
                 if (success)
@@ -1680,40 +1682,9 @@ namespace Avatar
                     Messages.Message("Portrait generation failed: " + (error ?? "unknown error"), MessageTypeDefOf.RejectInput, historical: false);
                 }
                 AvatarMod.UnmarkPending(pawnId);
-            }, startedUtc, isCreature: isCreature);
+            }, startedUtc, negativePrompt: negPrompt);
 
             Messages.Message("AI portrait generation started (API)", MessageTypeDefOf.TaskCompletion, historical: false);
-        }
-
-        public void GeneratePortraitImmediateSilent()
-        {
-            bool isCreature = !pawn.RaceProps.Humanlike;
-            string prompts = isCreature ? GetCreaturePrompts() : GetPrompts();
-            if (string.IsNullOrEmpty(prompts)) return;
-            string imagePath = SaveToStaticPortrait();
-            string outputPath = imagePath;
-            int pawnId = pawn.thingIDNumber;
-            string pawnLabel = pawn.LabelShortCap;
-            DateTime startedUtc = DateTime.UtcNow;
-
-            AvatarMod.MarkPending(pawnId);
-
-            ApiClient.GeneratePortraitAsync(imagePath, prompts, outputPath, (success, error) =>
-            {
-                if (success)
-                {
-                    TextureUtil.RemoveBackground(outputPath);
-                    double elapsed = (DateTime.UtcNow - startedUtc).TotalSeconds;
-                    AIGen.RecordGenerationSuccess(pawnLabel, elapsed);
-                    AvatarMod.MarkAutoGen(pawnId);
-                }
-                else
-                {
-                    AvatarMod.RecordFailedAttempt(pawnId);
-                    AvatarMod.UnmarkAutoGen(pawnId);
-                }
-                AvatarMod.UnmarkPending(pawnId);
-            }, startedUtc, isCreature: isCreature);
         }
         public string SaveToStaticPortrait()
         {
@@ -2196,43 +2167,13 @@ namespace Avatar
             manager.SetCheckDowned(false);
             curPrompts = manager.pawn.RaceProps.Humanlike ? manager.GetPrompts() : manager.GetCreaturePrompts();
             AvatarSettings s = AvatarManager.mod.settings;
-            bool isCreature = !pawn.RaceProps.Humanlike;
-            curNegative = isCreature ? BuildNegativePrompt(s, pawn) : AvatarMod.GetFullNegativePrompt(s);
+            curNegative = AvatarMod.GetNegativePromptForPawn(s, pawn);
             doCloseX = true;
             draggable = true;
             forcePause = true;
             absorbInputAroundWindow = true;
         }
         
-        private static string BuildNegativePrompt(AvatarSettings s, Pawn pawn)
-        {
-            if (!pawn.RaceProps.Humanlike)
-            {
-                PawnPortraitCategory cat = AvatarManager.ClassifyPawn(pawn);
-                switch (cat)
-                {
-                    case PawnPortraitCategory.Animal:     return s.animalNegativePrompt;
-                    case PawnPortraitCategory.Insect:     return s.insectNegativePrompt;
-                    case PawnPortraitCategory.Dragon:     return s.dragonNegativePrompt;
-                    case PawnPortraitCategory.Aquatic:    return s.aquaticNegativePrompt;
-                    case PawnPortraitCategory.Plant:
-                    case PawnPortraitCategory.Dryad:      return s.plantNegativePrompt;
-                    case PawnPortraitCategory.Mechanoid:  return s.mechNegativePrompt;
-                    case PawnPortraitCategory.Undead:
-                    case PawnPortraitCategory.Demon:
-                    case PawnPortraitCategory.Celestial:
-                    case PawnPortraitCategory.Elemental:
-                    case PawnPortraitCategory.Construct:
-                    case PawnPortraitCategory.Slime:
-                    case PawnPortraitCategory.Aberration:
-                    case PawnPortraitCategory.Mutant:
-                    case PawnPortraitCategory.AnomalyEntity:
-                                                          return s.entityNegativePrompt;
-                    default:                              return s.otherNegativePrompt;
-                }
-            }
-            return s.apiNegativePrompt;
-        }
         public override void DoWindowContents(Rect rect)
         {
             float w = rect.width;
@@ -2309,7 +2250,6 @@ namespace Avatar
             int pawnId = manager.pawn.thingIDNumber;
             string pawnLabel = manager.pawn.LabelShortCap;
             DateTime startedUtc = DateTime.UtcNow;
-            bool isCreature = !manager.pawn.RaceProps.Humanlike;
 
             AvatarMod.MarkPending(pawnId);
 
@@ -2328,7 +2268,7 @@ namespace Avatar
                     AvatarMod.UnmarkAutoGen(pawnId);
                 }
                 AvatarMod.UnmarkPending(pawnId);
-            }, startedUtc, isCreature: isCreature);
+            }, startedUtc, negativePrompt: curNegative);
 
             Messages.Message("AI portrait generation started (API)", MessageTypeDefOf.TaskCompletion, historical: false);
             Find.WindowStack.TryRemove(this);

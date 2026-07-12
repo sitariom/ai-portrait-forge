@@ -133,56 +133,6 @@ namespace Avatar
             Log.Message("Avatar: enqueued portrait for colonist " + pawn.LabelShortCap + " (queue=" + q + ")");
         }
 
-        // On-demand enqueue: called from the inspect pane when the player clicks
-        // on ANY pawn (colonist or non-colonist) that lacks a portrait. Bypasses
-        // the colonist-only gate so traders, raiders, quest pawns, etc. can be
-        // generated on selection. Non-colonists go to otherQueue (lower priority).
-        public void EnqueueOnDemand(Pawn pawn)
-        {
-            if (pawn == null) { return; }
-            int pawnId = pawn.thingIDNumber;
-
-            if (AvatarMod.GetFailedAttempts(pawnId) >= AvatarMod.MaxRetryAttempts)
-            {
-                AvatarMod.UnmarkPending(pawnId);
-                AvatarMod.MarkAutoGen(pawnId);
-                return;
-            }
-            if (AvatarMod.IsAutoGenMarked(pawnId))
-            {
-                // Same stale-marker self-heal as EnqueuePawn: if the marker is
-                // set but there's no file AND no pending generation, a previous
-                // attempt was silently dropped (e.g. by the dispatch `pawn.Map
-                // == map` check before that gate was removed, or API request dropped
-                // mid-gen). Clear the marker so we can re-attempt instead of
-                // silently skipping forever — the original bug that left clicked
-                // non-colonists never getting a portrait on a second click.
-                string verifyPath = AvatarManager.GetPortraitPath(pawn);
-                if (System.IO.File.Exists(verifyPath)) return;
-                if (AvatarMod.IsPending(pawnId)) return;
-                Log.Message("Avatar: stale autoGen marker for on-demand pawn " + pawn.LabelShortCap
-                    + " (id=" + pawnId + ", no file, not pending) — clearing and re-enqueueing.");
-                AvatarMod.UnmarkAutoGen(pawnId);
-                // fall through
-            }
-
-            string portraitPath = AvatarManager.GetPortraitPath(pawn);
-            if (System.IO.File.Exists(portraitPath))
-            {
-                AvatarMod.MarkAutoGen(pawnId);
-                return;
-            }
-
-            AvatarMod.MarkAutoGen(pawnId);
-            AvatarMod.MarkPending(pawnId);
-            if (pawn.Faction == Faction.OfPlayerSilentFail)
-                colonyQueue.Enqueue(pawn);
-            else
-                otherQueue.Enqueue(pawn);
-            int q = colonyQueue.Count + otherQueue.Count;
-            Log.Message("Avatar: on-demand portrait for " + pawn.LabelShortCap + " (queue=" + q + ")");
-        }
-
         private void EnqueueExistingPawns()
         {
             AvatarMod mod = LoadedModManager.GetMod<AvatarMod>();
@@ -337,6 +287,10 @@ namespace Avatar
                 string pawnLabel = pawn.LabelShortCap;
                 DateTime startedUtc = DateTime.UtcNow;
 
+                // Compute creature-specific negative prompt (respects user-configured templates)
+                AvatarMod mod = LoadedModManager.GetMod<AvatarMod>();
+                string negPrompt = (mod != null) ? AvatarMod.GetNegativePromptForPawn(mod.settings, pawn) : null;
+
                 ApiClient.GeneratePortraitAsync(imagePath, prompts, outputPath, (success, error) =>
                 {
                     if (success)
@@ -360,7 +314,7 @@ namespace Avatar
                         }
                     }
                     AvatarMod.UnmarkPending(pawnId);
-                }, startedUtc, isCreature: isCreature);
+                }, startedUtc, negativePrompt: negPrompt);
             }
             catch (Exception ex)
             {

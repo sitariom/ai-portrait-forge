@@ -23,12 +23,12 @@ namespace Avatar
         // outputPath  – where to save the result PNG (same path as imagePath)
         // onComplete  – called on MAIN thread with (success, errorMessage)
         // startedUtc  – timestamp captured before the call, for elapsed-time telemetry
-        // isCreature  – if true, uses creature-specific negative prompt instead of human
+        // negativePrompt – if provided, used directly; otherwise falls back to human negative
         // =========================================================================
         public static void GeneratePortraitAsync(
             string imagePath, string prompts, string outputPath,
             Action<bool, string> onComplete, DateTime startedUtc,
-            bool isCreature = false)
+            string negativePrompt = null)
         {
             // Snapshot everything we need on the calling thread.
             // Do NOT touch ModSettings or Unity APIs from the background thread.
@@ -36,7 +36,7 @@ namespace Avatar
             string endpoint = null;
             string positiveStylePrefix = null;
             string positiveStyleSuffix = null;
-            string negativePrompt = null;
+            // negativePrompt is the method parameter — used directly
             float cfgScale = 7f;
             int steps = 30;
             string sampler = "";
@@ -97,7 +97,9 @@ namespace Avatar
                     // Resolve art style prompts
                     string artPrompt = AvatarMod.GetArtStylePrompt(s.artStyle, s.customStylePrompt);
                     positiveStyleSuffix = artPrompt;
-                    negativePrompt = isCreature ? AvatarMod.GetFullCreatureNegativePrompt(s) : AvatarMod.GetFullNegativePrompt(s);
+                    // Use caller-supplied negativePrompt, or fall back to human default
+                    if (negativePrompt == null)
+                        negativePrompt = AvatarMod.GetFullNegativePrompt(s);
                     if (!string.IsNullOrEmpty(s.apiPositiveStylePrompt))
                     {
                         if (prependPositive)
@@ -115,10 +117,20 @@ namespace Avatar
 
             if (string.IsNullOrEmpty(apiKey))
             {
+                string providerName = provider switch
+                {
+                    ApiProvider.GoogleGemini => "Google Gemini",
+                    ApiProvider.OpenRouter => "OpenRouter",
+                    ApiProvider.Pixazo => "Pixazo",
+                    ApiProvider.NagaAc => "Naga.ac",
+                    ApiProvider.StabilityAI => "StabilityAI",
+                    ApiProvider.Generic => "Generic API",
+                    _ => "unknown"
+                };
                 LongEventHandler.ExecuteWhenFinished(() =>
                     onComplete(false, provider == ApiProvider.GoogleGemini
-                        ? "API key not configured. Get one at https://aistudio.google.com/apikey"
-                        : "API key not configured. Open Mod Options → Avatar - Personas to set it."));
+                        ? "API key not configured for " + providerName + ". Get one at https://aistudio.google.com/apikey"
+                        : "API key not configured for " + providerName + ". Open Mod Options → Avatar - Personas to set it."));
                 return;
             }
 

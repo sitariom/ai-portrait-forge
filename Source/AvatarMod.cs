@@ -70,7 +70,9 @@ namespace Avatar
         // bumping the counter exactly when TryAdd/TryRemove succeed keeps
         // them in lockstep. Interlocked guards against the Process.Exited
         // ThreadPool callbacks racing the main thread.
-        private static int pendingCount = 0;
+        private static int pendingCount = 0;        
+        /// <summary>Holds the last API test result message for the settings UI.</summary>
+        public static string testResultMessage = null;
         public static bool MarkPending(int id)
         {
             if (pendingPortraitPawnIds.TryAdd(id, 0))
@@ -221,7 +223,7 @@ namespace Avatar
         public override void DoSettingsWindowContents(Rect inRect)
         {
             Rect viewRect = inRect;
-            Rect contentRect = new Rect(0f, 0f, viewRect.width - 16f, 7000f);
+            Rect contentRect = new Rect(0f, 0f, viewRect.width - 16f, 12000f);
 
             Widgets.BeginScrollView(viewRect, ref scrollPosition, contentRect);
 
@@ -296,30 +298,35 @@ namespace Avatar
                     settings.geminiApiKey = listingStandard.TextEntry(settings.geminiApiKey);
                     listingStandard.Label((TaggedString)"Gemini Model:", -1);
                     settings.geminiModel = listingStandard.TextEntry(settings.geminiModel);
+                    if (listingStandard.ButtonText("Test Connection")) TestProviderConnection(settings.apiProvider, settings.geminiApiKey, "", settings.geminiModel);
                     break;
                 case ApiProvider.NagaAc:
                     listingStandard.Label((TaggedString)"Naga.ac API Key:", -1);
                     settings.nagaAcApiKey = listingStandard.TextEntry(settings.nagaAcApiKey);
                     listingStandard.Label((TaggedString)"Naga.ac Model:", -1);
                     settings.nagaAcModel = listingStandard.TextEntry(settings.nagaAcModel);
+                    if (listingStandard.ButtonText("Test Connection")) TestProviderConnection(settings.apiProvider, settings.nagaAcApiKey, "", settings.nagaAcModel);
                     break;
                 case ApiProvider.Pixazo:
                     listingStandard.Label((TaggedString)"Pixazo API Key:", -1);
                     settings.pixazoApiKey = listingStandard.TextEntry(settings.pixazoApiKey);
                     listingStandard.Label((TaggedString)"Pixazo Model:", -1);
                     settings.pixazoModel = listingStandard.TextEntry(settings.pixazoModel);
+                    if (listingStandard.ButtonText("Test Connection")) TestProviderConnection(settings.apiProvider, settings.pixazoApiKey, "", settings.pixazoModel);
                     break;
                 case ApiProvider.StabilityAI:
                     listingStandard.Label((TaggedString)"StabilityAI API Key:", -1);
                     settings.stabilityApiKey = listingStandard.TextEntry(settings.stabilityApiKey);
                     listingStandard.Label((TaggedString)"StabilityAI Endpoint:", -1);
                     settings.stabilityEndpoint = listingStandard.TextEntry(settings.stabilityEndpoint);
+                    if (listingStandard.ButtonText("Test Connection")) TestProviderConnection(settings.apiProvider, settings.stabilityApiKey, settings.stabilityEndpoint, "");
                     break;
                 case ApiProvider.OpenRouter:
                     listingStandard.Label((TaggedString)"OpenRouter API Key:", -1);
                     settings.openRouterApiKey = listingStandard.TextEntry(settings.openRouterApiKey);
                     listingStandard.Label((TaggedString)"OpenRouter Model:", -1);
                     settings.openRouterModel = listingStandard.TextEntry(settings.openRouterModel);
+                    if (listingStandard.ButtonText("Test Connection")) TestProviderConnection(settings.apiProvider, settings.openRouterApiKey, "", settings.openRouterModel);
                     break;
                 case ApiProvider.Generic:
                     listingStandard.Label((TaggedString)"Generic API Key:", -1);
@@ -328,7 +335,15 @@ namespace Avatar
                     settings.genericEndpoint = listingStandard.TextEntry(settings.genericEndpoint);
                     listingStandard.Label((TaggedString)"Generic Model:", -1);
                     settings.genericModel = listingStandard.TextEntry(settings.genericModel);
+                    if (listingStandard.ButtonText("Test Connection")) TestProviderConnection(settings.apiProvider, settings.genericApiKey, settings.genericEndpoint, settings.genericModel);
                     break;
+            }
+            // Show test result if set
+            if (testResultMessage != null)
+            {
+                Text.Font = GameFont.Tiny;
+                listingStandard.Label((TaggedString)testResultMessage, -1);
+                Text.Font = GameFont.Small;
             }
             listingStandard.GapLine();
             // ============================================================
@@ -433,13 +448,13 @@ namespace Avatar
             // ============================================================
             // Re-enqueue all player-faction pawns without portraits on disk.
             // Bypasses the retry-budget cap and autoGenTriggered cache.
-            if (listingStandard.ButtonText("Regenerate missing portraits for all colonists"))
+            if (listingStandard.ButtonText("Regenerate missing portraits for all pawns"))
             {
                 int n = AutoPortraitGenerator.RegenerateMissingForAllColonists();
                 Messages.Message(
                     n == 0
                         ? "All colonists already have portraits — nothing to enqueue."
-                        : ("Enqueued " + n + " missing portrait" + (n == 1 ? "" : "s") + ". The queue will pick them up over the next few seconds."),
+                        : ("Enqueued " + n + " missing portrait" + (n == 1 ? "" : "s") + " for all pawns. The queue will pick them up over the next few seconds."),
                     n == 0 ? MessageTypeDefOf.NeutralEvent : MessageTypeDefOf.TaskCompletion,
                     historical: false);
             }
@@ -494,9 +509,18 @@ namespace Avatar
                 case ApiProvider.Pixazo:      return "Pixazo";
                 case ApiProvider.StabilityAI: return "StabilityAI";
                 case ApiProvider.OpenRouter:  return "OpenRouter";
-                case ApiProvider.Generic:     return "Generic / Custom";
+                case ApiProvider.Generic:     return "Generic API";
                 default:                      return "Unknown";
             }
+        }
+
+        private static void TestProviderConnection(ApiProvider provider, string apiKey, string endpoint, string model)
+        {
+            testResultMessage = "Testing...";
+            ApiClient.TestConnection(provider, apiKey, endpoint, model, (success, message) =>
+            {
+                testResultMessage = (success ? "✅ OK: " : "❌ Failed: ") + message;
+            });
         }
 
         public static string GetArtStylePrompt(ArtStyle style, string customPrompt)
@@ -509,10 +533,58 @@ namespace Avatar
             return s.apiNegativePrompt + (string.IsNullOrEmpty(ArtStylePrompts.GetNegativePrompt(s.artStyle)) ? "" : ", " + ArtStylePrompts.GetNegativePrompt(s.artStyle));
         }
 
-        public static string GetFullCreatureNegativePrompt(AvatarSettings s)
+        // ============================================================
+        // Pawn-specific negative prompt with per-category templates.
+        // Used by both ProcessPawn (auto-queue) and the Prompts_Window.
+        // Replaces the old GetFullCreatureNegativePrompt which hardcoded
+        // a single creature fallback and ignored user-configured templates.
+        // ============================================================
+        public static string GetNegativePromptForPawn(AvatarSettings s, Pawn pawn)
         {
-            return "background, scenery, landscape orientation, horizontal composition, panoramic, nature, outdoor, indoor, room, wall, multiple creatures, group, herd, flock, extra animals, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, toy, duplicate, cloned, mirrored, extra legs, extra tails, mutated, fused, human, human face, human hands, anthropomorphic, wrong species, hybrid, chimeric"
-                + (string.IsNullOrEmpty(ArtStylePrompts.GetNegativePrompt(s.artStyle)) ? "" : ", " + ArtStylePrompts.GetNegativePrompt(s.artStyle));
+            if (pawn == null) return GetFullNegativePrompt(s);
+            
+            string basePrompt;
+            if (!pawn.RaceProps.Humanlike)
+            {
+                PawnPortraitCategory cat = AvatarManager.ClassifyPawn(pawn);
+                basePrompt = GetBaseNegativePromptForCategory(s, cat);
+            }
+            else
+            {
+                basePrompt = s.apiNegativePrompt;
+            }
+            
+            // Append art style negative
+            string artNeg = ArtStylePrompts.GetNegativePrompt(s.artStyle);
+            if (!string.IsNullOrEmpty(artNeg))
+                basePrompt = basePrompt + ", " + artNeg;
+            
+            return basePrompt;
+        }
+
+        private static string GetBaseNegativePromptForCategory(AvatarSettings s, PawnPortraitCategory cat)
+        {
+            switch (cat)
+            {
+                case PawnPortraitCategory.Animal:     return s.animalNegativePrompt;
+                case PawnPortraitCategory.Insect:     return s.insectNegativePrompt;
+                case PawnPortraitCategory.Dragon:     return s.dragonNegativePrompt;
+                case PawnPortraitCategory.Aquatic:    return s.aquaticNegativePrompt;
+                case PawnPortraitCategory.Plant:
+                case PawnPortraitCategory.Dryad:      return s.plantNegativePrompt;
+                case PawnPortraitCategory.Mechanoid:  return s.mechNegativePrompt;
+                case PawnPortraitCategory.Undead:
+                case PawnPortraitCategory.Demon:
+                case PawnPortraitCategory.Celestial:
+                case PawnPortraitCategory.Elemental:
+                case PawnPortraitCategory.Construct:
+                case PawnPortraitCategory.Slime:
+                case PawnPortraitCategory.Aberration:
+                case PawnPortraitCategory.Mutant:
+                case PawnPortraitCategory.AnomalyEntity:
+                                                      return s.entityNegativePrompt;
+                default:                              return s.otherNegativePrompt;
+            }
         }
     }
 
