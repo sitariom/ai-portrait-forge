@@ -2211,13 +2211,13 @@ namespace Avatar
                 PawnPortraitCategory cat = AvatarManager.ClassifyPawn(pawn);
                 switch (cat)
                 {
-                    case PawnPortraitCategory.Animal:     return !string.IsNullOrEmpty(s.animalNegativePrompt) ? s.animalNegativePrompt : GetDefaultCreatureNegative();
-                    case PawnPortraitCategory.Insect:     return !string.IsNullOrEmpty(s.insectNegativePrompt) ? s.insectNegativePrompt : GetDefaultInsectNegative();
-                    case PawnPortraitCategory.Dragon:     return !string.IsNullOrEmpty(s.dragonNegativePrompt) ? s.dragonNegativePrompt : GetDefaultDragonNegative();
-                    case PawnPortraitCategory.Aquatic:    return !string.IsNullOrEmpty(s.aquaticNegativePrompt) ? s.aquaticNegativePrompt : GetDefaultCreatureNegative();
+                    case PawnPortraitCategory.Animal:     return s.animalNegativePrompt;
+                    case PawnPortraitCategory.Insect:     return s.insectNegativePrompt;
+                    case PawnPortraitCategory.Dragon:     return s.dragonNegativePrompt;
+                    case PawnPortraitCategory.Aquatic:    return s.aquaticNegativePrompt;
                     case PawnPortraitCategory.Plant:
-                    case PawnPortraitCategory.Dryad:      return !string.IsNullOrEmpty(s.plantNegativePrompt) ? s.plantNegativePrompt : GetDefaultPlantNegative();
-                    case PawnPortraitCategory.Mechanoid:  return !string.IsNullOrEmpty(s.mechNegativePrompt) ? s.mechNegativePrompt : GetDefaultMechNegative();
+                    case PawnPortraitCategory.Dryad:      return s.plantNegativePrompt;
+                    case PawnPortraitCategory.Mechanoid:  return s.mechNegativePrompt;
                     case PawnPortraitCategory.Undead:
                     case PawnPortraitCategory.Demon:
                     case PawnPortraitCategory.Celestial:
@@ -2227,20 +2227,12 @@ namespace Avatar
                     case PawnPortraitCategory.Aberration:
                     case PawnPortraitCategory.Mutant:
                     case PawnPortraitCategory.AnomalyEntity:
-                                                          return !string.IsNullOrEmpty(s.entityNegativePrompt) ? s.entityNegativePrompt : GetDefaultEntityNegative();
-                    default:                              return !string.IsNullOrEmpty(s.otherNegativePrompt) ? s.otherNegativePrompt : GetDefaultCreatureNegative();
+                                                          return s.entityNegativePrompt;
+                    default:                              return s.otherNegativePrompt;
                 }
             }
-            return !string.IsNullOrEmpty(s.apiNegativePrompt) ? s.apiNegativePrompt : GetDefaultHumanoidNegative();
+            return s.apiNegativePrompt;
         }
-        
-        private static string GetDefaultHumanoidNegative() => "background, scenery, landscape, nature, outdoor, indoor, room, wall, multiple people, group, crowd, extra characters, extra person, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, missing face, cropped face, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, doll, wax figure, mannequin, duplicate, cloned, mirrored, extra limbs, extra fingers, mutated, fused";
-        private static string GetDefaultCreatureNegative() => "background, scenery, landscape, nature, outdoor, indoor, room, wall, multiple creatures, group, herd, flock, extra animals, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, toy, duplicate, cloned, mirrored, extra legs, extra tails, mutated, fused, human, human face, human hands, anthropomorphic, wrong species, hybrid, chimeric";
-        private static string GetDefaultInsectNegative() => "background, scenery, landscape, nature, outdoor, indoor, room, wall, multiple creatures, group, herd, full body, full shot, wide shot, distant, far away, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, duplicate, cloned, mirrored, extra legs, mutated, fused, human, human face, mammal, furry, vertebrate, wrong species, hybrid";
-        private static string GetDefaultDragonNegative() => "background, scenery, landscape, nature, outdoor, indoor, room, wall, full body, full shot, wide shot, distant, far away, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, duplicate, cloned, mirrored, mutated, fused, human, human face, mammal, dog, lizard, dinosaur, wrong species, wyvern, bird";
-        private static string GetDefaultPlantNegative() => "background, scenery, landscape, nature, outdoor, indoor, room, wall, full body, full shot, wide shot, distant, far away, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, duplicate, cloned, mirrored, mutated, fused, human, human face, animal, mammal, insect, vertebrate, wrong species, hybrid";
-        private static string GetDefaultMechNegative() => "background, scenery, landscape, nature, outdoor, indoor, room, wall, full body, full shot, wide shot, distant, far away, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, duplicate, cloned, mirrored, mutated, fused, organic, flesh, skin, human, human face, animal, biological, living tissue";
-        private static string GetDefaultEntityNegative() => "background, scenery, landscape, nature, outdoor, indoor, room, wall, full body, full shot, wide shot, distant, far away, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, duplicate, cloned, mirrored, mutated, fused, human, human face, normal, ordinary, mundane, realistic, natural, scientific, biological";
         public override void DoWindowContents(Rect rect)
         {
             float w = rect.width;

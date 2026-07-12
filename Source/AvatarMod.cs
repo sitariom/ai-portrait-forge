@@ -506,25 +506,13 @@ namespace Avatar
 
         public static string GetFullNegativePrompt(AvatarSettings s)
         {
-            if (!string.IsNullOrEmpty(s.apiNegativePrompt))
-                return s.apiNegativePrompt;
-            
-            string baseNeg = "background, scenery, landscape orientation, horizontal composition, panoramic, wide aspect ratio, nature, outdoor, indoor, room, wall, multiple people, group, crowd, extra characters, extra person, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, missing face, cropped face, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, doll, wax figure, mannequin, duplicate, cloned, mirrored, extra limbs, extra fingers, mutated, fused";
-            
-            string artNeg = ArtStylePrompts.GetNegativePrompt(s.artStyle);
-            if (string.IsNullOrEmpty(artNeg)) return baseNeg;
-            return baseNeg + ", " + artNeg;
+            return s.apiNegativePrompt + (string.IsNullOrEmpty(ArtStylePrompts.GetNegativePrompt(s.artStyle)) ? "" : ", " + ArtStylePrompts.GetNegativePrompt(s.artStyle));
         }
 
         public static string GetFullCreatureNegativePrompt(AvatarSettings s)
         {
-            // Use the generic creature default (no category-specific override here — 
-            // the per-category overrides are used by Prompts_Window at generation time)
-            string baseNeg = "background, scenery, landscape orientation, horizontal composition, panoramic, nature, outdoor, indoor, room, wall, multiple creatures, group, herd, flock, extra animals, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, toy, duplicate, cloned, mirrored, extra legs, extra tails, mutated, fused, human, human face, human hands, anthropomorphic, wrong species, hybrid, chimeric";
-            
-            string artNeg = ArtStylePrompts.GetNegativePrompt(s.artStyle);
-            if (string.IsNullOrEmpty(artNeg)) return baseNeg;
-            return baseNeg + ", " + artNeg;
+            return "background, scenery, landscape orientation, horizontal composition, panoramic, nature, outdoor, indoor, room, wall, multiple creatures, group, herd, flock, extra animals, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, toy, duplicate, cloned, mirrored, extra legs, extra tails, mutated, fused, human, human face, human hands, anthropomorphic, wrong species, hybrid, chimeric"
+                + (string.IsNullOrEmpty(ArtStylePrompts.GetNegativePrompt(s.artStyle)) ? "" : ", " + ArtStylePrompts.GetNegativePrompt(s.artStyle));
         }
     }
 
@@ -820,16 +808,16 @@ namespace Avatar
         public ArtStyle artStyle = ArtStyle.None;
         public string customStylePrompt = "";
 
-        // Negative prompt overrides (empty = use hardcoded default)
-        public string apiNegativePrompt = "";
-        public string animalNegativePrompt = "";
-        public string insectNegativePrompt = "";
-        public string dragonNegativePrompt = "";
-        public string aquaticNegativePrompt = "";
-        public string plantNegativePrompt = "";
-        public string mechNegativePrompt = "";
-        public string entityNegativePrompt = "";
-        public string otherNegativePrompt = "";
+        // Negative prompt overrides (pre-filled with hardcoded defaults)
+        public string apiNegativePrompt = "background, scenery, landscape orientation, horizontal composition, panoramic, wide aspect ratio, nature, outdoor, indoor, room, wall, multiple people, group, crowd, extra characters, extra person, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, missing face, cropped face, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, doll, wax figure, mannequin, duplicate, cloned, mirrored, extra limbs, extra fingers, mutated, fused";
+        public string animalNegativePrompt = "background, scenery, landscape orientation, horizontal composition, panoramic, nature, outdoor, indoor, room, wall, multiple creatures, group, herd, flock, extra animals, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, toy, duplicate, cloned, mirrored, extra legs, extra tails, mutated, fused, human, human face, human hands, anthropomorphic, wrong species, hybrid, chimeric";
+        public string insectNegativePrompt = "background, scenery, landscape orientation, horizontal composition, panoramic, nature, outdoor, indoor, room, wall, multiple creatures, group, herd, full body, full shot, wide shot, distant, far away, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, duplicate, cloned, mirrored, extra legs, mutated, fused, human, human face, mammal, furry, vertebrate, wrong species, hybrid";
+        public string dragonNegativePrompt = "background, scenery, landscape orientation, horizontal composition, panoramic, nature, outdoor, indoor, room, wall, full body, full shot, wide shot, distant, far away, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, duplicate, cloned, mirrored, mutated, fused, human, human face, mammal, dog, lizard, dinosaur, wrong species, wyvern, bird";
+        public string aquaticNegativePrompt = "background, scenery, landscape orientation, horizontal composition, panoramic, nature, outdoor, indoor, room, wall, multiple creatures, group, herd, flock, extra animals, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, toy, duplicate, cloned, mirrored, extra legs, extra tails, mutated, fused, human, human face, human hands, anthropomorphic, wrong species, hybrid, chimeric";
+        public string plantNegativePrompt = "background, scenery, landscape orientation, horizontal composition, panoramic, nature, outdoor, indoor, room, wall, full body, full shot, wide shot, distant, far away, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, duplicate, cloned, mirrored, mutated, fused, human, human face, animal, mammal, insect, vertebrate, wrong species, hybrid";
+        public string mechNegativePrompt = "background, scenery, landscape orientation, horizontal composition, panoramic, nature, outdoor, indoor, room, wall, full body, full shot, wide shot, distant, far away, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, duplicate, cloned, mirrored, mutated, fused, organic, flesh, skin, human, human face, animal, biological, living tissue";
+        public string entityNegativePrompt = "background, scenery, landscape orientation, horizontal composition, panoramic, nature, outdoor, indoor, room, wall, full body, full shot, wide shot, distant, far away, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, duplicate, cloned, mirrored, mutated, fused, human, human face, normal, ordinary, mundane, realistic, natural, scientific, biological";
+        public string otherNegativePrompt = "background, scenery, landscape orientation, horizontal composition, panoramic, nature, outdoor, indoor, room, wall, multiple creatures, group, herd, flock, extra animals, full body, full shot, wide shot, three-quarter shot, distant, far away, side profile, profile view, back view, looking away, turned head, low quality, low res, worst quality, jpeg artifacts, bad quality, blurry, out of focus, motion blur, distorted, warped, ugly, deformed, cut off, bad framing, off-center, watermark, text, signature, logo, website, username, 3d model, cgi, plastic, toy, duplicate, cloned, mirrored, extra legs, extra tails, mutated, fused, human, human face, human hands, anthropomorphic, wrong species, hybrid, chimeric";
 
         // Creature positive templates — one per category
         public string aiGenAnimalPreamble = "A front-facing portrait of a {size} {age}-year-old {gender} {race}, {lifestage}. {description}. {health}. isolated on solid white background, studio lighting, plain backdrop.";
