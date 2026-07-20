@@ -14,6 +14,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/).
 - Provider-aware prompt pipeline: `pollinationsPrompt` field on `AIGenPromptDef` 
   for mod authors to add Pollinations-optimized versions alongside existing SD prompts
 
+### Fixed
+
+- `previewImage` XML error (removed tag; no preview file exists)
+- Updated Krafs.Rimworld.Ref from 1.6.4817-beta to 1.6.4871 (matches game version)
+
 ## [1.0.0] - 2026-07-19
 
 ### Added
