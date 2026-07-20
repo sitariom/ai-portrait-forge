@@ -6,13 +6,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
-### Added
+## [1.0.2] - 2026-07-19
 
-- Pollinations.ai as 7th API provider: free generative AI via zimage/flux models
-- `Defs/AIGenPrompts_Pollinations.xml` — natural-language xenotype prompts for 20+ 
-  entries, optimized for Pollinations models (no SD weight syntax)
-- Provider-aware prompt pipeline: `pollinationsPrompt` field on `AIGenPromptDef` 
-  for mod authors to add Pollinations-optimized versions alongside existing SD prompts
+### Fixed
+
+- Duplicate `AIGenPromptDef` definitions causing RimWorld to skip 24 prompts
+  - `AIGenPrompts.xml` and `AIGenPrompts_Pollinations.xml` shared identical `<defName>` values
+  - RimWorld's `DefDatabase.AddAllInMods()` skips ALL duplicates, losing both prompts silently
+  - Merged `<pollinationsPrompt>` fields into base `AIGenPrompts.xml` for all 24 defs:
+    10 xenotypes (Dirtmole, Genie, Hussar, Sanguophage, Neanderthal, Pigskin, 
+    Impid, Waster, Yttakin, Highmate), 9 cosmetics, and 5 structural defs
+  - Deleted `AIGenPrompts_Pollinations.xml` to eliminate the source of duplication
+
+## [1.0.1] - 2026-07-19
 
 ### Fixed
 
