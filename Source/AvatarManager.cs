@@ -1672,7 +1672,8 @@ namespace Avatar
             {
                 if (success)
                 {
-                    TextureUtil.RemoveBackground(outputPath);
+                    if (AvatarManager.mod.settings.removeBackground)
+                        TextureUtil.RemoveBackground(outputPath);
                     double elapsed = (DateTime.UtcNow - startedUtc).TotalSeconds;
                     AIGen.RecordGenerationSuccess(pawnLabel, elapsed);
                     AvatarMod.MarkAutoGen(pawnId);
@@ -1729,8 +1730,28 @@ namespace Avatar
             // Manual prompt-editor variant: opens Prompts_Window so the user
             // can tweak the auto-generated prompt before kicking off the run.
             options.Add(new ("Regenerate portrait (Adjust prompt)", OpenPromptsWindow));
+            // Only show background removal if an AI portrait already exists on disk
+            string bgPortraitPath = GetPortraitPath(pawn);
+            if (System.IO.File.Exists(bgPortraitPath))
+            {
+                options.Add(new ("Remove background from this portrait", RemoveBGFromThisPawn));
+            }
             options.Add(new (isHidden ? "Show this image" : "Hide this image", ToggleAvatarVisibility));
             return new FloatMenu(options);
+        }
+
+        private void RemoveBGFromThisPawn()
+        {
+            if (pawn == null) return;
+            string path = GetPortraitPath(pawn);
+            if (!System.IO.File.Exists(path))
+            {
+                Messages.Message("No portrait file found for " + pawn.LabelShortCap + ".", MessageTypeDefOf.RejectInput, historical: false);
+                return;
+            }
+            TextureUtil.RemoveBackground(path);
+            AvatarMod.ClearCachedAvatars();
+            Messages.Message("Background removed from " + pawn.LabelShortCap + "'s portrait.", MessageTypeDefOf.TaskCompletion, historical: false);
         }
         public bool CheckCursor(Vector2 pos)
         {
@@ -2264,7 +2285,8 @@ namespace Avatar
             {
                 if (success)
                 {
-                    TextureUtil.RemoveBackground(outputPath);
+                    if (AvatarManager.mod.settings.removeBackground)
+                        TextureUtil.RemoveBackground(outputPath);
                     double elapsed = (DateTime.UtcNow - startedUtc).TotalSeconds;
                     AIGen.RecordGenerationSuccess(pawnLabel, elapsed);
                     AvatarMod.MarkAutoGen(pawnId);

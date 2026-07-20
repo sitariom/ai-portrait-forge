@@ -295,7 +295,8 @@ namespace Avatar
                 {
                     if (success)
                     {
-                        TextureUtil.RemoveBackground(outputPath);
+                        if (mod != null && mod.settings.removeBackground)
+                            TextureUtil.RemoveBackground(outputPath);
                         double elapsed = (DateTime.UtcNow - startedUtc).TotalSeconds;
                         AIGen.RecordGenerationSuccess(pawnLabel, elapsed);
                         AvatarMod.ClearFailedAttempts(pawnId);

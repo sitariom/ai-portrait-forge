@@ -269,6 +269,7 @@ namespace Avatar
             }
             listingStandard.CheckboxLabeled("Show avatars in quest tab (experimental)", ref settings.showInQuestTab);
             listingStandard.CheckboxLabeled("Auto-generate AI portraits at load/spawn (uses API credits!)", ref settings.autoGeneratePortraits);
+            listingStandard.CheckboxLabeled("Remove background from AI portraits (transparent background)", ref settings.removeBackground);
             listingStandard.GapLine();
             // ============================================================
             // API PROVIDER
@@ -475,6 +476,16 @@ namespace Avatar
                 Messages.Message("Reset " + permaFailed + " failed pawn(s). The periodic scan will re-enqueue them within 20 seconds.", MessageTypeDefOf.TaskCompletion, historical: false);
             }
             listingStandard.GapLine();
+            if (listingStandard.ButtonText("Remove background from all existing portraits"))
+            {
+                int n = RemoveBackgroundFromAllPortraits();
+                Messages.Message(
+                    n == 0
+                        ? "No existing portraits found on disk."
+                        : ("Removed background from " + n + " portrait" + (n == 1 ? "" : "s") + "."),
+                    n == 0 ? MessageTypeDefOf.NeutralEvent : MessageTypeDefOf.TaskCompletion,
+                    historical: false);
+            }
             if (listingStandard.ButtonText("Open portraits folder"))
             {
                 AIGen.OpenAvatarFolder();
@@ -482,6 +493,25 @@ namespace Avatar
             listingStandard.End();
             Widgets.EndScrollView();
             base.DoSettingsWindowContents(inRect);
+        }
+
+        /// <summary>
+        /// Remove background from all existing portrait PNGs on disk.
+        /// Returns the number of files processed.
+        /// </summary>
+        public static int RemoveBackgroundFromAllPortraits()
+        {
+            string dir = AvatarManager.GetPortraitDir();
+            if (!System.IO.Directory.Exists(dir))
+                return 0;
+
+            int count = 0;
+            foreach (string file in System.IO.Directory.GetFiles(dir, "*.png"))
+            {
+                TextureUtil.RemoveBackground(file);
+                count++;
+            }
+            return count;
         }
 
         public Texture2D GetColonistBarAvatar(Pawn pawn, bool drawHeadgear, bool drawClothes)
@@ -881,6 +911,7 @@ namespace Avatar
         public bool earsOnTop = true;
         public bool noCorpseGore = false;
         public bool autoGeneratePortraits = false;
+        public bool removeBackground = true;
         public string aiGenPreamble = "A front-facing portrait of a {age}-year-old {gender} {race}, {lifestage}, {bodytype} build, {skincolor} skin, {haircolor} hair. {hair}. {beard}. Wearing {apparel}. {items}. {mood}. {personality}. Traits: {traits}. Health: {health}. {implants}. {prosthetics}. isolated on solid white background, studio lighting, plain backdrop.";
         public string aiGenPreambleDefault = "A front-facing portrait of a {age}-year-old {gender} {race}, {lifestage}, {bodytype} build, {skincolor} skin, {haircolor} hair. {hair}. {beard}. Wearing {apparel}. {items}. {mood}. {personality}. Traits: {traits}. Health: {health}. {implants}. {prosthetics}. isolated on solid white background, studio lighting, plain backdrop.";
         public float aiGenVanillaPortraitOffset = 0.5f;
@@ -970,6 +1001,7 @@ namespace Avatar
             Scribe_Values.Look(ref showInColonistBar, "showInColonistBar");
             Scribe_Values.Look(ref showInColonistBarSizeAdjust, "showInColonistBarSizeAdjust");
             Scribe_Values.Look(ref autoGeneratePortraits, "autoGeneratePortraits", false);
+            Scribe_Values.Look(ref removeBackground, "removeBackground", true);
             Scribe_Values.Look(ref aiGenPreamble, "aiGenPreamble");
             Scribe_Values.Look(ref apiProvider, "apiProvider", ApiProvider.GoogleGemini);
             Scribe_Values.Look(ref apiCfgScale, "apiCfgScale", 7f);

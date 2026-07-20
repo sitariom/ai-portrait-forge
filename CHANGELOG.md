@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-07-20
+
+### Added
+
+- **Background removal toggle** — new checkbox in Mod Settings to enable/disable automatic background removal after AI portrait generation
+- **Individual background removal** — right-click a pawn → "Remove background from this portrait" runs the remover on just that pawn's existing portrait
+- **Batch background removal** — Mod Settings → "Remove background from all existing portraits" processes every PNG in the portrait folder at once
+
+### Changed
+
+- `TextureUtil.RemoveBackground()` is now gated by `settings.removeBackground` in all 3 generation call sites (auto-generator, manual regenerate, prompt window)
+
 ## [1.0.2] - 2026-07-19
 
 ### Fixed
