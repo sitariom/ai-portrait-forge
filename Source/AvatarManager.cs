@@ -1436,7 +1436,7 @@ namespace Avatar
             string artSuffix = AvatarMod.GetArtStylePrompt(mod.settings.artStyle, mod.settings.customStylePrompt);
             if (!string.IsNullOrEmpty(artSuffix))
                 result = "Art style: " + artSuffix + ". " + result;
-            result += " Portrait orientation, vertical composition. Plain white background, studio lighting.";
+            result += AvatarMod.GetPositivePromptSuffix(mod.settings);
             
             // Clean up double commas/spaces/dots
             result = System.Text.RegularExpressions.Regex.Replace(result, @"\s*,\s*,+\s*", ", ");
@@ -1454,7 +1454,7 @@ namespace Avatar
                 if (defName != "Human")
                     return pawn.RaceProps.AnyPawnKind.race.label?.ToLower() ?? defName;
             }
-            return XenotypeDescriptionGenerator.GetRaceDescription(pawn);
+            return XenotypeDescriptionGenerator.GetRaceDescription(pawn, mod.settings.apiProvider);
         }
         
         private string GetLifeStageLabel()
@@ -1968,7 +1968,7 @@ namespace Avatar
             string artSuffix = AvatarMod.GetArtStylePrompt(mod.settings.artStyle, mod.settings.customStylePrompt);
             if (!string.IsNullOrEmpty(artSuffix))
                 result = "Art style: " + artSuffix + ". " + result;
-            result += " Portrait orientation, vertical composition. Plain white background, studio lighting.";
+            result += AvatarMod.GetPositivePromptSuffix(mod.settings);
             
             // Clean up
             result = System.Text.RegularExpressions.Regex.Replace(result, @"\s*,\s*,+\s*", ", ");
@@ -2117,6 +2117,11 @@ namespace Avatar
     {
         public string prompt;
         public string overrides = "";
+        /// <summary>
+        /// Pollinations-optimized alternative prompt (natural language, no SD weight syntax).
+        /// Used instead of `prompt` when the selected API provider is Pollinations.
+        /// </summary>
+        public string pollinationsPrompt = "";
     }
 
     public class AIAvatarManager : AvatarManager

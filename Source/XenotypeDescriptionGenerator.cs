@@ -16,7 +16,7 @@ namespace Avatar
         /// <summary>
         /// Returns a concise visual description suitable for the {race} tag in AI image prompts.
         /// </summary>
-        public static string GetRaceDescription(Pawn pawn)
+        public static string GetRaceDescription(Pawn pawn, ApiProvider provider = ApiProvider.GoogleGemini)
         {
             // Non-human races: use their race label directly
             string raceDefName = pawn.RaceProps?.AnyPawnKind?.race?.defName ?? "Human";
@@ -39,8 +39,14 @@ namespace Avatar
             // 1. Curated prompt lookup — mod authors can add AIGenPromptDef entries
             //    with defName matching their XenotypeDef.defName
             AIGenPromptDef curated = DefDatabase<AIGenPromptDef>.GetNamedSilentFail(xenotype.defName);
-            if (curated != null && !curated.prompt.NullOrEmpty())
-                return curated.prompt;
+            if (curated != null)
+            {
+                // Use Pollinations-optimized prompt when available and provider matches
+                if (provider == ApiProvider.Pollinations && !curated.pollinationsPrompt.NullOrEmpty())
+                    return curated.pollinationsPrompt;
+                if (!curated.prompt.NullOrEmpty())
+                    return curated.prompt;
+            }
 
             // 2. For vanilla/DLC xenotypes with good descriptionShort, extract first sentence
             if (!xenotype.descriptionShort.NullOrEmpty())

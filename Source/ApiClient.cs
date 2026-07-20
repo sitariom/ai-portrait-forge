@@ -85,6 +85,10 @@ namespace Avatar
                             apiKey = s.stabilityApiKey?.Trim();
                             endpoint = s.stabilityEndpoint?.Trim();
                             break;
+                        case ApiProvider.Pollinations:
+                            apiKey = s.pollinationsApiKey?.Trim();
+                            model = s.pollinationsModel?.Trim();
+                            break;
                         case ApiProvider.Generic:
                             apiKey = s.genericApiKey?.Trim();
                             endpoint = s.genericEndpoint?.Trim();
@@ -115,7 +119,9 @@ namespace Avatar
                 return;
             }
 
-            if (string.IsNullOrEmpty(apiKey))
+            // Pollinations allows empty API key (free tier works without auth)
+            bool apiKeyRequired = provider != ApiProvider.Pollinations;
+            if (apiKeyRequired && string.IsNullOrEmpty(apiKey))
             {
                 string providerName = provider switch
                 {
@@ -124,6 +130,7 @@ namespace Avatar
                     ApiProvider.Pixazo => "Pixazo",
                     ApiProvider.NagaAc => "Naga.ac",
                     ApiProvider.StabilityAI => "StabilityAI",
+                    ApiProvider.Pollinations => "Pollinations.ai",
                     ApiProvider.Generic => "Generic API",
                     _ => "unknown"
                 };
@@ -163,7 +170,7 @@ namespace Avatar
                     // Read the pixel-art PNG into memory (skip if file doesn't exist or provider is text-only)
                     byte[] imageBytes = null;
                     bool hasImageFile = File.Exists(capturedImagePath);
-                    if (hasImageFile && capturedProvider != ApiProvider.Pixazo)
+                    if (hasImageFile && capturedProvider != ApiProvider.Pixazo && capturedProvider != ApiProvider.Pollinations)
                     {
                         imageBytes = File.ReadAllBytes(capturedImagePath);
                     }
@@ -216,6 +223,15 @@ namespace Avatar
                             capturedApiKey, capturedModel,
                             capturedPrompts, capturedPrefix, capturedSuffix,
                             capturedNegative,
+                            capturedOutputPath, out error);
+                    }
+                    else if (capturedProvider == ApiProvider.Pollinations)
+                    {
+                        success = CallPollinations(
+                            capturedApiKey,
+                            capturedPrompts, capturedPrefix, capturedSuffix,
+                            capturedNegative, capturedPrepend,
+                            capturedModel,
                             capturedOutputPath, out error);
                     }
                     else
@@ -1074,6 +1090,139 @@ namespace Avatar
         }
 
         // =========================================================================
+        // Pollinations.ai Image Generation API
+        //
+        // Text-to-image via GET request. Free tier available (API key optional).
+        // Endpoint: GET https://gen.pollinations.ai/image/{prompt}
+        // Models: zimage (default), flux, flux-pro, etc.
+        // Docs: https://gen.pollinations.ai/docs
+        // =========================================================================
+        private static bool CallPollinations(
+            string apiKey,
+            string prompts, string prefix, string suffix,
+            string negativePrompt, bool prependPositive,
+            string model, string outputPath,
+            out string error)
+        {
+            error = null;
+
+            // Build the positive prompt
+            string positive;
+            if (prependPositive)
+                positive = (prefix + " " + prompts + " " + suffix).Trim();
+            else
+                positive = (prompts + " " + suffix).Trim();
+            while (positive.Contains("  ")) positive = positive.Replace("  ", " ");
+
+            // Append negative prompt as inline instructions
+            if (!string.IsNullOrEmpty(negativePrompt))
+                positive += ". AVOID: " + negativePrompt;
+
+            string usedModel = string.IsNullOrEmpty(model) ? "zimage" : model;
+            string encodedPrompt = Uri.EscapeDataString(positive);
+            string url = "https://gen.pollinations.ai/image/" + encodedPrompt +
+                         "?width=480&height=576" +
+                         "&model=" + Uri.EscapeDataString(usedModel) +
+                         "&seed=" + new System.Random().Next(0, 999999).ToString();
+
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            req.Method = "GET";
+            req.Accept = "image/png,image/jpeg";
+            if (!string.IsNullOrEmpty(apiKey))
+                req.Headers["Authorization"] = "Bearer " + apiKey;
+            req.Timeout = 180000; // 3 minutes
+
+            try
+            {
+                using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
+                {
+                    if (resp.StatusCode != HttpStatusCode.OK)
+                    {
+                        error = "Pollinations returned HTTP " + (int)resp.StatusCode;
+                        Log.Warning("Avatar API (Pollinations): " + error);
+                        return false;
+                    }
+
+                    using (Stream responseStream = resp.GetResponseStream())
+                    {
+                        using (FileStream fileStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write))
+                        {
+                            responseStream.CopyTo(fileStream);
+                        }
+                    }
+                    return true;
+                }
+            }
+            catch (WebException we)
+            {
+                error = "Pollinations request failed: ";
+                try
+                {
+                    if (we.Response != null)
+                    {
+                        using (StreamReader sr = new StreamReader(we.Response.GetResponseStream()))
+                        {
+                            string body = sr.ReadToEnd();
+                            error += body;
+                            if (error.Length > 500) error = error.Substring(0, 500) + "...";
+                        }
+                    }
+                    else
+                    {
+                        error += we.Message;
+                    }
+                }
+                catch { error += we.Message; }
+                Log.Warning("Avatar API (Pollinations): " + error);
+                return false;
+            }
+        }
+
+        // =========================================================================
+        // Pollinations Test Connection
+        // =========================================================================
+        private static bool TestPollinationsConnection(string apiKey, string model, out string message)
+        {
+            message = "";
+            try
+            {
+                string usedModel = string.IsNullOrEmpty(model) ? "zimage" : model;
+                // Hit the docs endpoint to verify the server is reachable
+                string url = "https://gen.pollinations.ai/docs";
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+                req.Method = "GET";
+                req.Accept = "text/plain";
+                if (!string.IsNullOrEmpty(apiKey))
+                    req.Headers["Authorization"] = "Bearer " + apiKey;
+                req.Timeout = 15000;
+
+                using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
+                {
+                    message = "Pollinations.ai is reachable (model: " + usedModel + ").";
+                    return resp.StatusCode == HttpStatusCode.OK;
+                }
+            }
+            catch (WebException we)
+            {
+                try
+                {
+                    if (we.Response != null)
+                    {
+                        using (StreamReader sr = new StreamReader(we.Response.GetResponseStream()))
+                            message = sr.ReadToEnd();
+                    }
+                    else
+                    {
+                        message = we.Message;
+                    }
+                }
+                catch { message = we.Message; }
+                if (message.Length > 500) message = message.Substring(0, 500) + "...";
+                return false;
+            }
+        }
+
+        // =========================================================================
         // Helpers
         // =========================================================================
 
@@ -1270,6 +1419,9 @@ namespace Avatar
                             break;
                         case ApiProvider.NagaAc:
                             success = TestNagaAcConnection(apiKey, model, out message);
+                            break;
+                        case ApiProvider.Pollinations:
+                            success = TestPollinationsConnection(apiKey, model, out message);
                             break;
                         case ApiProvider.StabilityAI:
                             success = TestStabilityConnection(apiKey, endpoint, out message);

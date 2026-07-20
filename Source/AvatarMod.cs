@@ -283,6 +283,8 @@ namespace Avatar
                 settings.apiProvider = ApiProvider.NagaAc;
             if (listingStandard.ButtonText((settings.apiProvider == ApiProvider.Pixazo ? "> " : "   ") + "Pixazo (free tier, SDXL)"))
                 settings.apiProvider = ApiProvider.Pixazo;
+            if (listingStandard.ButtonText((settings.apiProvider == ApiProvider.Pollinations ? "> " : "   ") + "Pollinations.ai (free tier, Flux/Z-Image)"))
+                settings.apiProvider = ApiProvider.Pollinations;
             if (listingStandard.ButtonText((settings.apiProvider == ApiProvider.StabilityAI ? "> " : "   ") + "StabilityAI (paid, img2img)"))
                 settings.apiProvider = ApiProvider.StabilityAI;
             if (listingStandard.ButtonText((settings.apiProvider == ApiProvider.OpenRouter ? "> " : "   ") + "OpenRouter (paid, multi-model)"))
@@ -313,6 +315,14 @@ namespace Avatar
                     listingStandard.Label((TaggedString)"Pixazo Model:", -1);
                     settings.pixazoModel = listingStandard.TextEntry(settings.pixazoModel);
                     if (listingStandard.ButtonText("Test Connection")) TestProviderConnection(settings.apiProvider, settings.pixazoApiKey, "", settings.pixazoModel);
+                    break;
+                case ApiProvider.Pollinations:
+                    listingStandard.Label((TaggedString)"Pollinations API Key (optional for free tier):", -1);
+                    settings.pollinationsApiKey = listingStandard.TextEntry(settings.pollinationsApiKey);
+                    listingStandard.Label((TaggedString)"Pollinations Model (zimage, flux, flux-pro, flame):", -1);
+                    settings.pollinationsModel = listingStandard.TextEntry(settings.pollinationsModel);
+                    listingStandard.CheckboxLabeled("Minimal negative prompt (recommended for zimage/flux)", ref settings.pollinationsUseMinimalNegative);
+                    if (listingStandard.ButtonText("Test Connection")) TestProviderConnection(settings.apiProvider, settings.pollinationsApiKey, "", settings.pollinationsModel);
                     break;
                 case ApiProvider.StabilityAI:
                     listingStandard.Label((TaggedString)"StabilityAI API Key:", -1);
@@ -509,6 +519,7 @@ namespace Avatar
                 case ApiProvider.Pixazo:      return "Pixazo";
                 case ApiProvider.StabilityAI: return "StabilityAI";
                 case ApiProvider.OpenRouter:  return "OpenRouter";
+                case ApiProvider.Pollinations: return "Pollinations.ai";
                 case ApiProvider.Generic:     return "Generic API";
                 default:                      return "Unknown";
             }
@@ -528,6 +539,18 @@ namespace Avatar
             return ArtStylePrompts.GetPrompt(style, customPrompt);
         }
 
+        /// <summary>
+        /// Returns a provider-appropriate positive prompt suffix.
+        /// Pollinations uses natural-language constraints (no text, watermark, etc.).
+        /// Standard providers use the hard-coded SD-style suffix.
+        /// </summary>
+        public static string GetPositivePromptSuffix(AvatarSettings s)
+        {
+            if (s.apiProvider == ApiProvider.Pollinations && !string.IsNullOrEmpty(s.pollinationsPositiveSuffix))
+                return " " + s.pollinationsPositiveSuffix;
+            return " Portrait orientation, vertical composition. Plain white background, studio lighting.";
+        }
+
         public static string GetFullNegativePrompt(AvatarSettings s)
         {
             return s.apiNegativePrompt + (string.IsNullOrEmpty(ArtStylePrompts.GetNegativePrompt(s.artStyle)) ? "" : ", " + ArtStylePrompts.GetNegativePrompt(s.artStyle));
@@ -539,10 +562,30 @@ namespace Avatar
         // Replaces the old GetFullCreatureNegativePrompt which hardcoded
         // a single creature fallback and ignored user-configured templates.
         // ============================================================
-        public static string GetNegativePromptForPawn(AvatarSettings s, Pawn pawn)
+        /// <summary>
+        /// Returns a provider-appropriate negative prompt.
+        /// Pollinations (zimage/flux) uses minimal exclusion-only negatives;
+        /// other providers (SD, Gemini, etc.) use the standard detailed negatives.
+        /// </summary>
+        public static string GetProviderNegativePrompt(AvatarSettings s, Pawn pawn)
         {
-            if (pawn == null) return GetFullNegativePrompt(s);
-            
+            if (s.apiProvider == ApiProvider.Pollinations && s.pollinationsUseMinimalNegative)
+            {
+                // Pollinations flux: short, specific exclusions only (no quality terms).
+                // Z-Image Turbo ignores negative prompt entirely, so this is harmless.
+                return "text, watermark, logos, signatures, writing, labels, extra people, extra characters, multiple subjects, duplicated features";
+            }
+            // Standard provider: use the full detailed negative prompt
+            if (pawn != null)
+                return GetNegativePromptInternal(s, pawn);
+            return GetFullNegativePrompt(s);
+        }
+
+        /// <summary>
+        /// Internal fallback: builds full negative prompt for non-Pollinations providers.
+        /// </summary>
+        private static string GetNegativePromptInternal(AvatarSettings s, Pawn pawn)
+        {
             string basePrompt;
             if (!pawn.RaceProps.Humanlike)
             {
@@ -553,13 +596,16 @@ namespace Avatar
             {
                 basePrompt = s.apiNegativePrompt;
             }
-            
-            // Append art style negative
             string artNeg = ArtStylePrompts.GetNegativePrompt(s.artStyle);
             if (!string.IsNullOrEmpty(artNeg))
                 basePrompt = basePrompt + ", " + artNeg;
-            
             return basePrompt;
+        }
+
+        public static string GetNegativePromptForPawn(AvatarSettings s, Pawn pawn)
+        {
+            if (pawn == null) return GetProviderNegativePrompt(s, null);
+            return GetProviderNegativePrompt(s, pawn);
         }
 
         private static string GetBaseNegativePromptForCategory(AvatarSettings s, PawnPortraitCategory cat)
@@ -869,6 +915,12 @@ namespace Avatar
         public string stabilityApiKey = "";
         public string stabilityEndpoint = "";
 
+        // Pollinations.ai
+        public string pollinationsApiKey = "";
+        public string pollinationsModel = "zimage";
+        public bool pollinationsUseMinimalNegative = true;
+        public string pollinationsPositiveSuffix = "Portrait orientation, vertical composition. Isolated on solid white background, studio lighting, plain backdrop. No text, no watermark, no logos, no signatures, no labels, no writing, no people, no extra characters.";
+
         // Generic
         public string genericApiKey = "";
         public string genericEndpoint = "";
@@ -937,6 +989,10 @@ namespace Avatar
             Scribe_Values.Look(ref nagaAcModel, "nagaAcModel", "flux-1-schnell:free");
             Scribe_Values.Look(ref stabilityApiKey, "stabilityApiKey");
             Scribe_Values.Look(ref stabilityEndpoint, "stabilityEndpoint");
+            Scribe_Values.Look(ref pollinationsApiKey, "pollinationsApiKey");
+            Scribe_Values.Look(ref pollinationsModel, "pollinationsModel", "zimage");
+            Scribe_Values.Look(ref pollinationsUseMinimalNegative, "pollinationsUseMinimalNegative", true);
+            Scribe_Values.Look(ref pollinationsPositiveSuffix, "pollinationsPositiveSuffix");
             Scribe_Values.Look(ref genericApiKey, "genericApiKey");
             Scribe_Values.Look(ref genericEndpoint, "genericEndpoint");
             Scribe_Values.Look(ref genericModel, "genericModel");
@@ -999,6 +1055,7 @@ namespace Avatar
         OpenRouter,
         Pixazo,
         NagaAc,
+        Pollinations,
         Generic
     }
 

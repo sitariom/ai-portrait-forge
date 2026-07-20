@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+    <!-- ================================================================ -->
+    <!-- Pollinations-Optimized Xenotype Prompts                          -->
+    <!--                                                                   -->
+    <!-- These use natural language instead of SD weight syntax because:   -->
+    <!--   - Z-Image Turbo ignores (token:weight) syntax entirely         -->
+    <!--   - FLUX prefers narrative descriptions over tag lists           -->
+    <!--   - Natural language works better for both models                -->
+    <!--                                                                   -->
+    <!-- Each entry mirrors a defName from AIGenPrompts.xml, with the     -->
+    <!-- pollinationsPrompt field activated when ApiProvider.Pollinations -->
+    <!-- is selected.                                                      -->
+    <!-- ================================================================ -->
+
+    <!-- Xenotype face descriptors — narrative versions -->
+
+    <Avatar.AIGenPromptDef>
+        <defName>Dirtmole</defName>
+        <prompt>pale gray-tinted skin, broad compact face, squinting sensitive eyes, low-light adapted</prompt>
+        <pollinationsPrompt>A human with pale gray-tinted skin and a broad compact face. Their eyes are squinting and sensitive, adapted for low-light underground environments.</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Genie</defName>
+        <prompt>(completely bald:1.3), gaunt thin face, pale fragile skin, elongated delicate features</prompt>
+        <pollinationsPrompt>A completely bald human with a gaunt thin face and pale fragile skin. Their features are elongated and delicate, giving an ethereal high-tech appearance.</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Hussar</defName>
+        <prompt>muscular soldier, (blood red eyes:1.3), stern military expression, intimidating stare</prompt>
+        <pollinationsPrompt>A muscular soldier with blood red eyes and a stern military expression. They have an intimidating stare and powerful build, like a genetically engineered warrior.</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Sanguophage</defName>
+        <prompt>pale vampiric face, (sharp visible fangs:1.2), red glowing eyes, beautiful but sinister</prompt>
+        <pollinationsPrompt>A pale vampiric face with sharp visible fangs and red glowing eyes. Beautiful but sinister, with an aristocratic and otherworldly presence.</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Neanderthal</defName>
+        <prompt>(heavy pronounced brow ridge:1.3), broad thick neck, primitive robust features, low sloped forehead</prompt>
+        <pollinationsPrompt>A human with a heavy pronounced brow ridge and a low sloped forehead. They have a broad thick neck and primitive robust features, like an ancient hominid.</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Pigskin</defName>
+        <prompt>(anthropomorphic pig-person:1.3), (large pink pig snout:1.3), (large pink pig ears:1.2), pink mottled skin, jowly cheeks</prompt>
+        <pollinationsPrompt>An anthropomorphic pig-person with a large pink pig snout and large pink pig ears. They have pink mottled skin and jowly cheeks, resembling a humanoid pig.</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Impid</defName>
+        <prompt>(reddish orange skin:1.3), (two prominent black horns on forehead:1.3), sharp angular face, glowing eyes, fanged smile</prompt>
+        <pollinationsPrompt>A humanoid with reddish orange skin and two prominent black horns growing from their forehead. They have a sharp angular face, glowing eyes, and a fanged smile.</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Waster</defName>
+        <prompt>gaunt sickly face, grey sallow pollution-damaged skin, hollow cheeks, weary haggard expression</prompt>
+        <pollinationsPrompt>A human with a gaunt sickly face and grey sallow pollution-damaged skin. Their cheeks are hollow with a weary haggard expression, scarred by harsh wasteland conditions.</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Yttakin</defName>
+        <prompt>(anthropomorphic wolf-person:1.3), (entire face covered in thick brown fur:1.4), (animal snout:1.2), pointed animal ears, broad imposing head and shoulders, fierce expression</prompt>
+        <pollinationsPrompt>An anthropomorphic wolf-person whose entire face and head are covered in thick brown fur. They have a pronounced animal snout, pointed animal ears, and a broad imposing head with a fierce expression.</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Highmate</defName>
+        <prompt>(strikingly beautiful elven features:1.2), flawless pale skin, delicate expressive face, soft white hair, otherworldly</prompt>
+        <pollinationsPrompt>A strikingly beautiful human with elven features, flawless pale skin, and a delicate expressive face. They have soft white hair and an otherworldly serene presence.</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <!-- Hair/Skin/Eye color variants — kept as-is since they are simple terms -->
+    <!-- but with pollinationsPrompt as natural language where helpful -->
+
+    <Avatar.AIGenPromptDef>
+        <defName>Hair_SnowWhite</defName>
+        <prompt>(white hair: 1.5)</prompt>
+        <pollinationsPrompt>white hair, striking pale platinum white</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Eyes_Red</defName>
+        <prompt>(red eyes: 1.5)</prompt>
+        <pollinationsPrompt>bright red eyes, glowing crimson irises</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Eyes_Gray</defName>
+        <prompt>(white eyes: 1.5)</prompt>
+        <pollinationsPrompt>pale white eyes, colorless irises</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Skin_InkBlack</defName>
+        <prompt>(black skin: 1.5)</prompt>
+        <pollinationsPrompt>deep ink black skin</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Skin_SlateGray</defName>
+        <prompt>(gray skin: 1.5)</prompt>
+        <pollinationsPrompt>slate gray skin</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Skin_SheerWhite</defName>
+        <prompt>(white skin: 1.5)</prompt>
+        <pollinationsPrompt>pale sheer white skin</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Skin_Blue</defName>
+        <prompt>(blue skin: 1.5)</prompt>
+        <pollinationsPrompt>bright blue skin</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Skin_Purple</defName>
+        <prompt>(purple skin: 1.5)</prompt>
+        <pollinationsPrompt>purple skin</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Skin_Green</defName>
+        <prompt>(green skin: 1.5)</prompt>
+        <pollinationsPrompt>green skin</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <!-- Creature appearance prompts are defined with <pollinationsPrompt> entries
+         that use full sentences for better Pollinations comprehension.
+         The <prompt> field (SD-style tags) is preserved as fallback. -->
+
+    <Avatar.AIGenPromptDef>
+        <defName>Jaw_Heavy</defName>
+        <prompt>(large cheeks), (heavy jaw), (neanderthal: 1.3)</prompt>
+        <pollinationsPrompt>large cheeks and a heavy prominent jaw, neanderthal-like features</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Brow_Heavy</defName>
+        <prompt>(big forehead)</prompt>
+        <pollinationsPrompt>a large prominent forehead with heavy brow ridge</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Nose_Pig</defName>
+        <prompt>(pig nose)</prompt>
+        <pollinationsPrompt>a flat upturned pig-like nose</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Ears_Pig</defName>
+        <prompt>(pig ears)</prompt>
+        <pollinationsPrompt>large floppy pig-like ears</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+
+    <Avatar.AIGenPromptDef>
+        <defName>Head_Gaunt</defName>
+        <prompt>(gaunt skull like), (mutated)</prompt>
+        <pollinationsPrompt>a gaunt skull-like head with hollow cheeks and prominent bone structure</pollinationsPrompt>
+    </Avatar.AIGenPromptDef>
+</Defs>
